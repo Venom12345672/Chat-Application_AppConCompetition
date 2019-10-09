@@ -1,5 +1,6 @@
 import React from 'react';
 import {
+  SafeAreaView,
   View,
   Text,
   TouchableOpacity,
@@ -7,7 +8,6 @@ import {
   FlatList,
 } from 'react-native';
 import User from '../User';
-import styles from './constants/styles';
 import firebase from 'firebase';
 export default class HomeScreen extends React.Component {
   static navigationOptions = {
@@ -35,24 +35,26 @@ export default class HomeScreen extends React.Component {
   };
   renderRow = ({item}) => {
     return (
-      <TouchableOpacity>
-        <Text>{item.name}</Text>
+      <TouchableOpacity
+      onPress={()=>this.props.navigation.navigate('ChatScreen',item)}
+        style={{padding: 10, borderBottomColor: '#ccc', borderBottomWidth: 1}}>
+        <Text style={{fontSize: 20}}>{item.name}</Text>
       </TouchableOpacity>
     );
   };
   render() {
     return (
-      <View style={styles.container}>
-        <TouchableOpacity onPress={this.logoutHandler}>
+      <SafeAreaView>
+        {/* <TouchableOpacity onPress={this.logoutHandler}>
           <Text>Hi</Text>
-        </TouchableOpacity>
+        </TouchableOpacity> */}
 
         <FlatList
           data={this.state.users}
           renderItem={this.renderRow}
           keyExtractor={item => item.username}
         />
-      </View>
+      </SafeAreaView>
     );
   }
 }
