@@ -22,11 +22,15 @@ export default class HomeScreen extends React.Component {
     dbRef.on('child_added', val => {
       let person = val.val();
       person.username = val.key;
-      this.setState(prevState => {
-        return {
-          users: [...prevState.users, person],
-        };
-      });
+      if (person.username == User.username) {
+        User.name = person.name;
+      } else {
+        this.setState(prevState => {
+          return {
+            users: [...prevState.users, person],
+          };
+        });
+      }
     });
   }
   logoutHandler = async () => {
@@ -36,7 +40,7 @@ export default class HomeScreen extends React.Component {
   renderRow = ({item}) => {
     return (
       <TouchableOpacity
-      onPress={()=>this.props.navigation.navigate('ChatScreen',item)}
+        onPress={() => this.props.navigation.navigate('ChatScreen', item)}
         style={{padding: 10, borderBottomColor: '#ccc', borderBottomWidth: 1}}>
         <Text style={{fontSize: 20}}>{item.name}</Text>
       </TouchableOpacity>
@@ -45,9 +49,9 @@ export default class HomeScreen extends React.Component {
   render() {
     return (
       <SafeAreaView>
-        {/* <TouchableOpacity onPress={this.logoutHandler}>
+        <TouchableOpacity onPress={this.logoutHandler}>
           <Text>Hi</Text>
-        </TouchableOpacity> */}
+        </TouchableOpacity>
 
         <FlatList
           data={this.state.users}
