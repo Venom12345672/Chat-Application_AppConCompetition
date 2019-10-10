@@ -4,15 +4,15 @@ import {
   TextInput,
   View,
   TouchableOpacity,
-  AsyncStorage
+  AsyncStorage,
 } from 'react-native';
-import User from '../User'
-import styles from "./constants/styles"
-import firebase from 'firebase'
+import User from '../User';
+import styles from './constants/styles';
+import firebase from 'firebase';
 export default class LoginScreen extends React.Component {
-    static navigationOptions = {
-        header: null
-    }
+  static navigationOptions = {
+    header: null,
+  };
   state = {
     username: '',
     name: '',
@@ -22,13 +22,16 @@ export default class LoginScreen extends React.Component {
   };
 
   submitForm = async () => {
-      // error handling related to the user sign up/login
+    // error handling related to the user sign up/login
     alert(this.state.name + '\n' + this.state.username);
     // save data
-    await AsyncStorage.setItem('username',this.state.username)
-    User.username = this.state.username
-    firebase.database().ref('users/'+ User.username).set({name: this.state.name})
-    this.props.navigation.navigate('App')
+    await AsyncStorage.setItem('username', this.state.username);
+    User.username = this.state.username;
+    firebase
+      .database()
+      .ref('users/' + User.username)
+      .set({name: this.state.name, username: this.state.username});
+    this.props.navigation.navigate('App');
   };
   render() {
     return (

@@ -5,6 +5,7 @@ import HomeScreen from './components/HomeScreen';
 import LoginScreen from './components/LoginScreen';
 import AuthLoadingScreen from './components/AuthLoadingScreen';
 import ChatScreen from './components/ChatScreen';
+import UserProfile from './components/UserProfile'
 import {YellowBox} from 'react-native';
 import _ from 'lodash';
 import SearchScreen from './components/SearchScreen';
@@ -22,6 +23,7 @@ const MainStack = createBottomTabNavigator({
 });
 const AppStack = createStackNavigator({
   Home: MainStack,
+  UserProfile: UserProfile,
   ChatScreen: ChatScreen,
 });
 const AuthStack = createStackNavigator({Login: LoginScreen});
