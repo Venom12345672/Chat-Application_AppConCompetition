@@ -8,7 +8,7 @@ export default class SearchScreen extends React.Component {
     enteredUsername: '',
     serachedUser: null,
   };
-  handleChange = key => val => {
+  handleChange = key => async val => {
     if (val == User.username) {
       return;
     }
@@ -17,10 +17,14 @@ export default class SearchScreen extends React.Component {
     ref
       .orderByChild('username')
       .equalTo(val)
-      .on('child_added', function(snapshot) {
-        temp = snapshot.val();
+      .once('value')
+      .then(snapshot => {
+        if (snapshot.val()) {
+          temp = snapshot.val()[val];
+          this.setState({[key]: val, serachedUser: temp});
+        }
       });
-    this.setState({[key]: val, serachedUser: temp});
+    this.setState({[key]: val, serachedUser: null});
   };
   renderResult = navigation => {
     if (this.state.serachedUser) {

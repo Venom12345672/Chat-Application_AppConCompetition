@@ -18,20 +18,34 @@ export default class HomeScreen extends React.Component {
     users: [],
   };
   componentWillMount() {
-    let dbRef = firebase.database().ref('users');
-    dbRef.on('child_added', val => {
-      let person = val.val();
-      person.username = val.key;
+    let dbRef = firebase.database().ref('users/' + User.username+'/friends/');
+    dbRef.on('child_added',val => {
+      let person = val.val()
+      console.log(person)
+      //person.username = val.username
       if (person.username == User.username) {
-        User.name = person.name;
+        //User.name = person.name
       } else {
         this.setState(prevState => {
           return {
-            users: [...prevState.users, person],
-          };
-        });
+            users: [...prevState.users,person]
+          }
+        })
       }
-    });
+    })
+    // dbRef.on('child_added', val => {
+    //   let person = val.val();
+    //   person.username = val.key;
+    //   if (person.username == User.username) {
+    //     User.name = person.name;
+    //   } else {
+    //     this.setState(prevState => {
+    //       return {
+    //         users: [...prevState.users, person],
+    //       };
+    //     });
+    //   }
+    // });
   }
   logoutHandler = async () => {
     await AsyncStorage.clear();

@@ -30,7 +30,11 @@ export default class LoginScreen extends React.Component {
     firebase
       .database()
       .ref('users/' + User.username)
-      .set({name: this.state.name, username: this.state.username});
+      .set({
+        name: this.state.name,
+        username: this.state.username,
+        friends: null,
+      });
     this.props.navigation.navigate('App');
   };
   render() {
