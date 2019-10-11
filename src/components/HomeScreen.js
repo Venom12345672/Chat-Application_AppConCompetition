@@ -21,7 +21,6 @@ export default class HomeScreen extends React.Component {
     let dbRef = firebase.database().ref('users/' + User.username+'/friends/');
     dbRef.on('child_added',val => {
       let person = val.val()
-      console.log(person)
       //person.username = val.username
       if (person.username == User.username) {
         //User.name = person.name
@@ -33,19 +32,7 @@ export default class HomeScreen extends React.Component {
         })
       }
     })
-    // dbRef.on('child_added', val => {
-    //   let person = val.val();
-    //   person.username = val.key;
-    //   if (person.username == User.username) {
-    //     User.name = person.name;
-    //   } else {
-    //     this.setState(prevState => {
-    //       return {
-    //         users: [...prevState.users, person],
-    //       };
-    //     });
-    //   }
-    // });
+
   }
   logoutHandler = async () => {
     await AsyncStorage.clear();
@@ -64,7 +51,7 @@ export default class HomeScreen extends React.Component {
     return (
       <SafeAreaView>
         <TouchableOpacity onPress={this.logoutHandler}>
-          <Text>Hi</Text>
+          <Text>Logout</Text>
         </TouchableOpacity>
 
         <FlatList

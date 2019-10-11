@@ -11,14 +11,21 @@ export default class UserProfile extends React.Component {
     };
   }
   addFriend = () => {
-    var friendListRef = firebase
+    var myfriendListRef = firebase
       .database()
       .ref('users/' + User.username + '/friends');
-    var newfriendRef = friendListRef.push();
-    let friend = this.state.seacrhedUser.username;
+    var newfriendRef = myfriendListRef.push();
     newfriendRef.set({
       username: this.state.seacrhedUser.username,
       name: this.state.seacrhedUser.name,
+    });
+    var otherFriendListRef = firebase
+      .database()
+      .ref('users/' + this.state.seacrhedUser.username + '/friends');
+    var otherNewFriend = otherFriendListRef.push();
+    otherNewFriend.set({
+      username: User.username,
+      name: User.name,
     });
   };
   render() {

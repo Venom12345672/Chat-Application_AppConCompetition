@@ -21,20 +21,43 @@ export default class LoginScreen extends React.Component {
     this.setState({[key]: val});
   };
 
+  userEntry = () => {
+    var ref = firebase.database().ref(`/users`);
+    ref
+      .orderByChild('username')
+      .equalTo(User.username)
+      .once('value')
+      .then(snapshot => {
+        // User already exist in database
+        if (snapshot.val()) {
+          console.log(snapshot.val());
+          return;
+        } else {
+          firebase
+            .database()
+            .ref('users/' + User.username)
+            .set({
+              name: this.state.name,
+              username: this.state.username,
+              friends: null,
+            });
+        }
+      });
+  };
+
   submitForm = async () => {
     // error handling related to the user sign up/login
     alert(this.state.name + '\n' + this.state.username);
     // save data
     await AsyncStorage.setItem('username', this.state.username);
     User.username = this.state.username;
-    firebase
-      .database()
-      .ref('users/' + User.username)
-      .set({
-        name: this.state.name,
-        username: this.state.username,
-        friends: null,
-      });
+    User.name = this.state.name;
+    console.log("YO")
+    console.log(User.name);
+    console.log(User.username);
+    console.log("HAMZAH")
+    this.userEntry();
+
     this.props.navigation.navigate('App');
   };
   render() {
