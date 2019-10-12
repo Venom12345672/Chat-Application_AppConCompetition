@@ -1,7 +1,8 @@
 const User = {
     username: null,
     name: null,
-    friends: []
+    friends: [],
+    token: null
   };
   
   export default User;

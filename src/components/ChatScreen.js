@@ -10,6 +10,8 @@ import styles from './constants/styles';
 import {TextInput, FlatList} from 'react-native-gesture-handler';
 import User from '../User';
 import firebase from 'firebase';
+import PubNubReact from 'pubnub-react';
+var PushNotification = require('react-native-push-notification');
 export default class ChatScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
     return {
@@ -18,6 +20,11 @@ export default class ChatScreen extends React.Component {
   };
   constructor(props) {
     super(props);
+    this.pubnub = new PubNubReact({
+      publishKey: 'pub-c-1a256bc0-f516-4140-83e1-2cd02f72e19b',
+      subscribeKey: 'sub-c-1a959da8-ebfb-11e9-ad72-8e6732c0d56b',
+    });
+    this.pubnub.init(this);
     this.state = {
       person: {
         name: props.navigation.getParam('name'),
@@ -79,6 +86,19 @@ export default class ChatScreen extends React.Component {
         .ref()
         .update(updates);
       this.setState({textMessage: ''});
+      this.pubnub.publish(
+        {
+          message: {
+            pn_gcm: {
+              data: {message: `${User.username}: ${this.state.textMessage}`},
+            },
+          },
+          channel: this.state.person.username,
+        },
+        status => {
+          console.log(User.name);
+        },
+      );
     }
   };
   renderRow = ({item}) => {

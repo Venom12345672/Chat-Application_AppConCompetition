@@ -52,10 +52,6 @@ export default class LoginScreen extends React.Component {
     await AsyncStorage.setItem('username', this.state.username);
     User.username = this.state.username;
     User.name = this.state.name;
-    console.log("YO")
-    console.log(User.name);
-    console.log(User.username);
-    console.log("HAMZAH")
     this.userEntry();
 
     this.props.navigation.navigate('App');
