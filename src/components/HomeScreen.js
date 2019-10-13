@@ -6,10 +6,10 @@ import {
   TouchableOpacity,
   AsyncStorage,
   FlatList,
+  Image,
 } from 'react-native';
 import User from '../User';
 import firebase from 'firebase';
-import PushNotificationIOS from 'react-native';
 import PubNubReact from 'pubnub-react';
 var PushNotification = require('react-native-push-notification');
 
@@ -23,9 +23,8 @@ export default class HomeScreen extends React.Component {
     this.pubnub.init(this);
     PushNotification.configure({
       onRegister: function(token) {
-
         if (token.os == 'android') {
-          User.token = token.token
+          User.token = token.token;
           this.pubnub.push.addChannels({
             channels: [User.username],
             device: User.token,
@@ -41,9 +40,6 @@ export default class HomeScreen extends React.Component {
       senderID: '168500823310',
     });
   }
-  static navigationOptions = {
-    title: 'Chats',
-  };
 
   state = {
     users: [],
@@ -69,19 +65,19 @@ export default class HomeScreen extends React.Component {
     await AsyncStorage.clear();
     this.props.navigation.navigate('Auth');
     this.pubnub.push.removeChannels(
-        {
-          channels: [User.username],
-          device: User.token,
-          pushGateway: 'gcm', // apns, gcm, mpns
-        },
-        function(status) {
-          if (status.error) {
-            console.log('operation failed w/ error:', status);
-          } else {
-            console.log('operation done!');
-          }
-        },
-      );
+      {
+        channels: [User.username],
+        device: User.token,
+        pushGateway: 'gcm', // apns, gcm, mpns
+      },
+      function(status) {
+        if (status.error) {
+          console.log('operation failed w/ error:', status);
+        } else {
+          console.log('operation done!');
+        }
+      },
+    );
   };
   renderRow = ({item}) => {
     return (
