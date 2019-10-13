@@ -5,6 +5,7 @@ import {
   View,
   TouchableOpacity,
   AsyncStorage,
+  Alert,
 } from 'react-native';
 import User from '../User';
 import styles from './constants/styles';
@@ -15,46 +16,46 @@ export default class LoginScreen extends React.Component {
   };
   state = {
     username: '',
-    name: '',
+    password: '',
   };
   handleChange = key => val => {
     this.setState({[key]: val});
   };
 
-  userEntry = () => {
-    var ref = firebase.database().ref(`/users`);
-    ref
-      .orderByChild('username')
-      .equalTo(User.username)
-      .once('value')
-      .then(snapshot => {
-        // User already exist in database
-        if (snapshot.val()) {
-          console.log(snapshot.val());
-          return;
-        } else {
-          firebase
-            .database()
-            .ref('users/' + User.username)
-            .set({
-              name: this.state.name,
-              username: this.state.username,
-              friends: null,
-            });
-        }
-      });
-  };
-
   submitForm = async () => {
     // error handling related to the user sign up/login
-    alert(this.state.name + '\n' + this.state.username);
     // save data
-    await AsyncStorage.setItem('username', this.state.username);
-    User.username = this.state.username;
-    User.name = this.state.name;
-    this.userEntry();
+    if (this.state.username == '' || this.state.password == '') {
+      Alert.alert('Invalid Login', 'Please fill all the input fields');
+      return;
+    }
+    var ref = firebase.database().ref(`/users`);
+    await ref
+      .orderByChild('username')
+      .equalTo(this.state.username)
+      .once('value')
+      .then(snapshot => {
+        if (snapshot.val()) {
+          fetchedData = snapshot.child(this.state.username).val();
+          if (fetchedData.password == this.state.password) {
+            AsyncStorage.setItem('username', fetchedData.username);
+            AsyncStorage.setItem('name', fetchedData.name);
+            User.username = fetchedData.username;
+            User.name = fetchedData.name;
+            User.password = fetchedData.password;
+            this.props.navigation.navigate('App');
+            return;
+          } else {
+            Alert.alert('Invalid Login', 'Incorrect username or password');
+            return;
+          }
+        } else {
+          Alert.alert('Invalid Login', 'Incorrect username or password');
+          return;
+        }
+      });
 
-    this.props.navigation.navigate('App');
+    // this.props.navigation.navigate('App');
   };
   render() {
     return (
@@ -66,10 +67,11 @@ export default class LoginScreen extends React.Component {
           onChangeText={this.handleChange('username')}
         />
         <TextInput
-          placeholder="Name"
+          placeholder="Password"
           style={styles.input}
-          value={this.state.name}
-          onChangeText={this.handleChange('name')}
+          value={this.state.password}
+          secureTextEntry={true}
+          onChangeText={this.handleChange('password')}
         />
         <TouchableOpacity onPress={this.submitForm}>
           <Text style={styles.btn}>Enter</Text>
