@@ -1,13 +1,5 @@
 import React from 'react';
-import {
-  SafeAreaView,
-  View,
-  Text,
-  TouchableOpacity,
-  AsyncStorage,
-  FlatList,
-  Image,
-} from 'react-native';
+import {SafeAreaView, Text, TouchableOpacity, FlatList} from 'react-native';
 import User from '../User';
 import firebase from 'firebase';
 import PubNubReact from 'pubnub-react';
@@ -61,24 +53,7 @@ export default class HomeScreen extends React.Component {
       }
     });
   }
-  logoutHandler = async () => {
-    await AsyncStorage.clear();
-    this.props.navigation.navigate('Auth');
-    this.pubnub.push.removeChannels(
-      {
-        channels: [User.username],
-        device: User.token,
-        pushGateway: 'gcm', // apns, gcm, mpns
-      },
-      function(status) {
-        if (status.error) {
-          console.log('operation failed w/ error:', status);
-        } else {
-          console.log('operation done!');
-        }
-      },
-    );
-  };
+
   renderRow = ({item}) => {
     return (
       <TouchableOpacity
@@ -91,10 +66,6 @@ export default class HomeScreen extends React.Component {
   render() {
     return (
       <SafeAreaView>
-        <TouchableOpacity onPress={this.logoutHandler}>
-          <Text>Logout</Text>
-        </TouchableOpacity>
-
         <FlatList
           data={this.state.users}
           renderItem={this.renderRow}
