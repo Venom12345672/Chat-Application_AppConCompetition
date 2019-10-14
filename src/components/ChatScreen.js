@@ -1,17 +1,8 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
-import styles from './constants/styles';
-import {TextInput, FlatList} from 'react-native-gesture-handler';
-import User from '../User';
-import firebase from 'firebase';
+import {GiftedChat} from 'react-native-gifted-chat';
 import PubNubReact from 'pubnub-react';
-var PushNotification = require('react-native-push-notification');
+import firebase from 'firebase';
+import User from '../User';
 export default class ChatScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
     return {
@@ -30,138 +21,58 @@ export default class ChatScreen extends React.Component {
         name: props.navigation.getParam('name'),
         username: props.navigation.getParam('username'),
       },
-      textMessage: '',
       messageList: [],
     };
   }
-  componentWillMount() {
+ 
+  parse = snapshot => {
+    const {text, createdAt, user} = snapshot.val();
+    const {key: _id} = snapshot;
+    const message = {_id, text, createdAt, user};
+    return message;
+  };
+  get user() {
+    return {
+      name: 'hamzah baig',
+      email: 'hamzahbaigi8@yahoo.com',
+      avatar: 'https://placeimg.com/140/140/any',
+      _id: 2,
+    };
+  }
+  send = async messages => {
+    for (let i = 0; i < messages.length; i++) {
+      const {text, user} = messages[i];
+      timeStamp = new Date().toString();
+      const message = {text, createdAt: timeStamp, user};
+      await firebase
+        .database()
+        .ref('messages')
+        .child(User.username)
+        .child(this.state.person.username)
+        .push(message);
+    }
+  };
+  componentDidMount() {
     firebase
       .database()
       .ref('messages')
       .child(User.username)
       .child(this.state.person.username)
-      .on('child_added', value => {
-        this.setState(prevState => {
-          return {
-            messageList: [...prevState.messageList, value.val()],
-          };
-        });
+      .on('child_added', snapshot => {
+        message = this.parse(snapshot);
+        this.setState(previousState => ({
+          messageList: GiftedChat.append(previousState.messageList, message),
+        }));
       });
   }
-  handleChange = key => val => {
-    this.setState({[key]: val});
-  };
-
-  convertTime = time => {
-    let d = new Date(time);
-    let c = new Date();
-    let result = (d.getHours() < 10 ? '0' : '') + d.getHours() + ':';
-    result += (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
-    if (c.getDay() != d.getDay()) {
-      result = d.getDay() + ' ' + d.getMonth() + ' ' + result;
-    }
-    return result;
-  };
-  sendMessage = async () => {
-    if (this.state.textMessage.length > 0) {
-      let msgId = firebase
-        .database()
-        .ref('messages')
-        .child(User.username)
-        .child(this.state.person.username)
-        .push().key;
-      let updates = {};
-      let message = {
-        message: this.state.textMessage,
-        time: firebase.database.ServerValue.TIMESTAMP,
-        from: User.username,
-      };
-      updates[
-        'messages/' +
-          User.username +
-          '/' +
-          this.state.person.username +
-          '/' +
-          msgId
-      ] = message;
-      updates[
-        'messages/' +
-          this.state.person.username +
-          '/' +
-          User.username +
-          '/' +
-          msgId
-      ] = message;
-      firebase
-        .database()
-        .ref()
-        .update(updates);
-      this.setState({textMessage: ''});
-      this.pubnub.publish(
-        {
-          message: {
-            pn_gcm: {
-              data: {message: `${User.username}: ${this.state.textMessage}`},
-            },
-          },
-          channel: this.state.person.username,
-        },
-        status => {
-          console.log(User.name);
-        },
-      );
-    }
-  };
-  renderRow = ({item}) => {
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          width: '60%',
-          alignSelf: item.from == User.username ? 'flex-end' : 'flex-start',
-          backgroundColor: item.from == User.username ? '#00897b' : '#7cb342',
-          borderRadius: 5,
-          marginBottom: 10,
-        }}>
-        <Text style={{color: '#fff', padding: 7, fontSize: 16}}>
-          {item.message}
-        </Text>
-        <Text style={{color: '#eee', padding: 3, fontSize: 12}}>
-          {this.convertTime(item.time)}
-        </Text>
-      </View>
-    );
-  };
+  
   render() {
-    let {height, width} = Dimensions.get('window');
     return (
-      <SafeAreaView>
-        <FlatList
-          style={{padding: 10, height: height * 0.8}}
-          data={this.state.messageList}
-          renderItem={this.renderRow}
-          keyExtractor={(item, index) => index.toString()}
-        />
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginHorizontal: 5,
-          }}>
-          <TextInput
-            style={styles.input}
-            value={this.state.textMessage}
-            placeholder="Type message..."
-            onChangeText={this.handleChange('textMessage')}
-          />
-          <TouchableOpacity
-            onPress={this.sendMessage}
-            style={{paddingBottom: 10, marginLeft: 5}}>
-            <Text style={styles.btn}>Send</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      <GiftedChat
+        messages={this.state.messageList}
+        onSend={this.send}
+        user={this.user}
+      />
     );
   }
 }
