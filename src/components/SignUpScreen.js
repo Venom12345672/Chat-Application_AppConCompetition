@@ -7,16 +7,19 @@ import {
   TextInput,
   Alert,
   AsyncStorage,
+  Image,
 } from 'react-native';
 import styles from './constants/styles';
 import firebase from 'firebase';
 import User from '../User';
+import ImagePicker from 'react-native-image-picker';
 export default class SignUpScreen extends React.Component {
   state = {
     username: '',
     name: '',
     password: '',
     confirmPassword: '',
+    photo: null,
   };
   userEntry = () => {
     AsyncStorage.setItem('username', this.state.username);
@@ -84,9 +87,24 @@ export default class SignUpScreen extends React.Component {
   onChangeHandler = key => val => {
     this.setState({[key]: val});
   };
+  handleChoosePhoto = () => {
+    const options = {noData: true};
+    ImagePicker.launchImageLibrary(options, response => {
+      if (response.uri) {
+        this.setState({photo: response});
+      }
+    });
+  };
   render() {
     return (
       <SafeAreaView style={styles.container}>
+        {this.state.photo && (
+          <Image
+            source={{uri: this.state.photo.uri}}
+            style={{width: 100, height: 100, marginRight: 200, borderRadius: 100}}
+          />
+        )}
+
         <TextInput
           style={styles.input}
           value={this.state.username}
@@ -111,6 +129,9 @@ export default class SignUpScreen extends React.Component {
           onChangeText={this.onChangeHandler('confirmPassword')}></TextInput>
         <TouchableOpacity onPress={this.signUpHandler}>
           <Text style={styles.btn}>Sign Up</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this.handleChoosePhoto}>
+          <Text style={styles.btn}>Choose Photo</Text>
         </TouchableOpacity>
       </SafeAreaView>
     );

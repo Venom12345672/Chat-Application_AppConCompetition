@@ -41,6 +41,9 @@ export default class ChatScreen extends React.Component {
     };
   }
   send = async messages => {
+    this.setState({
+      isSending: true, // show the animated loader in place of the send button
+    });
     for (let i = 0; i < messages.length; i++) {
       let {text, user} = messages[i];
       timeStamp = new Date().toString();
@@ -59,20 +62,10 @@ export default class ChatScreen extends React.Component {
         .child(this.state.person.username)
         .child(User.username)
         .push(message2);
-      this.pubnub.publish(
-        {
-          message: {
-            pn_gcm: {
-              data: {message: `${User.username}: ${text}`},
-            },
-          },
-          channel: this.state.person.username,
-        },
-        status => {
-          console.log(User.name);
-        },
-      );
     }
+    this.setState({
+      isSending: false, // show the animated loader in place of the send button
+    });
   };
   componentDidMount() {
     firebase

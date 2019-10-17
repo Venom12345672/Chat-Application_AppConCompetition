@@ -1,167 +1,159 @@
 import React from 'react';
-import {
-  View,
-  Text,
-  SafeAreaView,
-  TouchableOpacity,
-  Dimensions,
-} from 'react-native';
+import {View, Text, TouchableOpacity, Image} from 'react-native';
 import styles from './constants/styles';
-import {TextInput, FlatList} from 'react-native-gesture-handler';
-import User from '../User';
+import ImagePicker from 'react-native-image-picker';
+import DocumentPicker from 'react-native-document-picker';
 import firebase from 'firebase';
-import PubNubReact from 'pubnub-react';
-var PushNotification = require('react-native-push-notification');
+import {PermissionsAndroid} from 'react-native';
+
+var RNFS = require('react-native-fs');
+const dirs = RNFS.dirs;
 export default class ChatScreen extends React.Component {
-  static navigationOptions = ({navigation}) => {
-    return {
-      title: navigation.getParam('name', null),
-    };
+  state = {
+    url: null,
   };
-  constructor(props) {
-    super(props);
-    this.pubnub = new PubNubReact({
-      publishKey: 'pub-c-1a256bc0-f516-4140-83e1-2cd02f72e19b',
-      subscribeKey: 'sub-c-1a959da8-ebfb-11e9-ad72-8e6732c0d56b',
-    });
-    this.pubnub.init(this);
-    this.state = {
-      person: {
-        name: props.navigation.getParam('name'),
-        username: props.navigation.getParam('username'),
-      },
-      textMessage: '',
-      messageList: [],
-    };
-  }
-  componentWillMount() {
-    firebase
-      .database()
-      .ref('messages')
-      .child(User.username)
-      .child(this.state.person.username)
-      .on('child_added', value => {
-        this.setState(prevState => {
-          return {
-            messageList: [...prevState.messageList, value.val()],
-          };
-        });
+  handleChoosePhoto = () => {
+    const options = {noData: true};
+    ImagePicker.launchImageLibrary(options, response => {
+      this.uploadImage(response.uri, 'test-image').then(result => {
+        alert('Success');
       });
-  }
-  handleChange = key => val => {
-    this.setState({[key]: val});
+    });
   };
 
-  convertTime = time => {
-    let d = new Date(time);
-    let c = new Date();
-    let result = (d.getHours() < 10 ? '0' : '') + d.getHours() + ':';
-    result += (d.getMinutes() < 10 ? '0' : '') + d.getMinutes();
-    if (c.getDay() != d.getDay()) {
-      result = d.getDay() + ' ' + d.getMonth() + ' ' + result;
-    }
-    return result;
+  uploadImage = async (uri, name) => {
+    console.log(uri, name);
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    var ref = firebase
+      .storage()
+      .ref()
+      .child('images/' + name);
+    return ref.put(blob);
   };
-  sendMessage = async () => {
-    if (this.state.textMessage.length > 0) {
-      let msgId = firebase
-        .database()
-        .ref('messages')
-        .child(User.username)
-        .child(this.state.person.username)
-        .push().key;
-      let updates = {};
-      let message = {
-        message: this.state.textMessage,
-        time: firebase.database.ServerValue.TIMESTAMP,
-        from: User.username,
-      };
-      updates[
-        'messages/' +
-          User.username +
-          '/' +
-          this.state.person.username +
-          '/' +
-          msgId
-      ] = message;
-      updates[
-        'messages/' +
-          this.state.person.username +
-          '/' +
-          User.username +
-          '/' +
-          msgId
-      ] = message;
-      firebase
-        .database()
-        .ref()
-        .update(updates);
-      this.setState({textMessage: ''});
-      this.pubnub.publish(
+
+  download = async () => {
+    this.requestCameraPermission();
+    this.requestCameraPermission1();
+    // write the file
+    await RNFS.mkdir(`/storage/emulated/0/TEMPP`)
+      .then(() => {
+        alert('Success');
+      })
+      .catch(err => {
+        console.log(err);
+      });
+
+    // RNFS.readDir(RNFS.DocumentDirectoryPath)
+    //   .then(files => {
+    //     files.forEach(x => {
+    //       console.log(x.isDirectory());
+    //     });
+    //   })
+    //   .catch(err => {
+    //     console.log(err.message, err.code);
+    //   });
+    // console.log(p);
+    const ref = firebase.storage().ref('documents/7.pdf');
+    const url = await ref.getDownloadURL();
+    const response = await fetch(url);
+    text = await response.text();
+    const DownloadFileOptions = {
+      fromUrl: url,
+      toFile: `/storage/emulated/0/TEMPP/test-image.pdf`,
+    };
+    const {jobId, promise} = await RNFS.downloadFile(DownloadFileOptions);
+    promise.then(result => {
+      console.log(result);
+    });
+  };
+  requestCameraPermission = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.WRITE_EXTERNAL_STORAGE,
         {
-          message: {
-            pn_gcm: {
-              data: {message: `${User.username}: ${this.state.textMessage}`},
-            },
-          },
-          channel: this.state.person.username,
-        },
-        status => {
-          console.log(User.name);
+          title: 'Cool Photo App Camera Permission',
+          message:
+            'Cool Photo App needs access to your camera ' +
+            'so you can take awesome pictures.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
         },
       );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You can use the camera');
+      } else {
+        console.log('Camera permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
     }
   };
-  renderRow = ({item}) => {
-    return (
-      <View
-        style={{
-          flexDirection: 'row',
-          width: '60%',
-          alignSelf: item.from == User.username ? 'flex-end' : 'flex-start',
-          backgroundColor: item.from == User.username ? '#00897b' : '#7cb342',
-          borderRadius: 5,
-          marginBottom: 10,
-        }}>
-        <Text style={{color: '#fff', padding: 7, fontSize: 16}}>
-          {item.message}
-        </Text>
-        <Text style={{color: '#eee', padding: 3, fontSize: 12}}>
-          {this.convertTime(item.time)}
-        </Text>
-      </View>
-    );
+  requestCameraPermission1 = async () => {
+    try {
+      const granted = await PermissionsAndroid.request(
+        PermissionsAndroid.PERMISSIONS.READ_EXTERNAL_STORAGE,
+        {
+          title: 'Cool Photo App Camera Permission',
+          message:
+            'Cool Photo App needs access to your camera ' +
+            'so you can take awesome pictures.',
+          buttonNeutral: 'Ask Me Later',
+          buttonNegative: 'Cancel',
+          buttonPositive: 'OK',
+        },
+      );
+      if (granted === PermissionsAndroid.RESULTS.GRANTED) {
+        console.log('You can use the camera');
+      } else {
+        console.log('Camera permission denied');
+      }
+    } catch (err) {
+      console.warn(err);
+    }
+  };
+  handleDocument = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.allFiles],
+      });
+      console.log(res);
+      const response = await fetch(res.uri);
+      const blob = await response.blob();
+      var ref = firebase
+        .storage()
+        .ref()
+        .child('documents/test-pdf')
+        .put(blob)
+        .then(() => {
+          alert('Success');
+        });
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err;
+      }
+    }
   };
   render() {
-    let {height, width} = Dimensions.get('window');
     return (
-      <SafeAreaView>
-        <FlatList
-          style={{padding: 10, height: height * 0.8}}
-          data={this.state.messageList}
-          renderItem={this.renderRow}
-          keyExtractor={(item, index) => index.toString()}
+      <View style={styles.container}>
+        <TouchableOpacity onPress={this.handleChoosePhoto}>
+          <Text style={styles.btn}>Choose Photo</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this.handleDocument}>
+          <Text style={styles.btn}>Choose Document</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={this.download}>
+          <Text style={styles.btn}>Download</Text>
+        </TouchableOpacity>
+        <Image
+          style={{height: 100, width: 200}}
+          source={{uri: this.state.url}}
         />
-
-        <View
-          style={{
-            flexDirection: 'row',
-            alignItems: 'center',
-            marginHorizontal: 5,
-          }}>
-          <TextInput
-            style={styles.input}
-            value={this.state.textMessage}
-            placeholder="Type message..."
-            onChangeText={this.handleChange('textMessage')}
-          />
-          <TouchableOpacity
-            onPress={this.sendMessage}
-            style={{paddingBottom: 10, marginLeft: 5}}>
-            <Text style={styles.btn}>Send</Text>
-          </TouchableOpacity>
-        </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }

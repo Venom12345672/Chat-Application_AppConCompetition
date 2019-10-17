@@ -13,7 +13,7 @@ export default class AuthLoadingScreen extends React.Component {
       authDomain: 'chatapplicationappcon.firebaseapp.com',
       databaseURL: 'https://chatapplicationappcon.firebaseio.com',
       projectId: 'chatapplicationappcon',
-      storageBucket: '',
+      storageBucket: 'chatapplicationappcon.appspot.com',
       messagingSenderId: '168500823310',
       appId: '1:168500823310:web:85abb4b18a86430c1f835f',
       measurementId: 'G-4CHCLQ4XGE',
