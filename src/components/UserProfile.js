@@ -18,6 +18,7 @@ export default class UserProfile extends React.Component {
     newfriendRef.set({
       username: this.state.seacrhedUser.username,
       name: this.state.seacrhedUser.name,
+      channelKey: User.username + this.state.seacrhedUser.username,
     });
     var otherFriendListRef = firebase
       .database()
@@ -26,6 +27,7 @@ export default class UserProfile extends React.Component {
     otherNewFriend.set({
       username: User.username,
       name: User.name,
+      channelKey: User.username + this.state.seacrhedUser.username,
     });
   };
   render() {
