@@ -3,6 +3,7 @@ import {SafeAreaView, Text, TouchableOpacity, FlatList} from 'react-native';
 import User from '../User';
 import firebase from 'firebase';
 import PubNubReact from 'pubnub-react';
+
 var PushNotification = require('react-native-push-notification');
 
 export default class HomeScreen extends React.Component {

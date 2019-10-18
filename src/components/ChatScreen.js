@@ -1,9 +1,18 @@
 import React from 'react';
-import {Text, ActivityIndicator} from 'react-native';
+import {
+  Text,
+  ActivityIndicator,
+  View,
+  TouchableOpacity,
+  StyleSheet,
+  Image,
+} from 'react-native';
 import {GiftedChat, Send} from 'react-native-gifted-chat';
 import PubNubReact from 'pubnub-react';
 import firebase from 'firebase';
 import User from '../User';
+import ImagePicker from 'react-native-image-picker';
+
 export default class ChatScreen extends React.Component {
   static navigationOptions = ({navigation}) => {
     return {
@@ -23,6 +32,7 @@ export default class ChatScreen extends React.Component {
         username: props.navigation.getParam('username'),
       },
       messageList: [],
+      fileName: '',
     };
   }
 
@@ -32,6 +42,7 @@ export default class ChatScreen extends React.Component {
     const message = {_id, text, createdAt, user};
     return message;
   };
+
   get user() {
     return {
       name: 'hamzah baig',
@@ -40,6 +51,7 @@ export default class ChatScreen extends React.Component {
       _id: 2,
     };
   }
+
   send = async messages => {
     for (let i = 0; i < messages.length; i++) {
       let {text, user} = messages[i];
@@ -74,6 +86,7 @@ export default class ChatScreen extends React.Component {
       );
     }
   };
+
   componentDidMount() {
     firebase
       .database()
@@ -93,6 +106,63 @@ export default class ChatScreen extends React.Component {
     };
   }
 
+  handleChoosePhoto = () => {
+    const options = {noData: true};
+    ImagePicker.launchImageLibrary(options, response => {
+      this.uploadImage(response.uri, response.fileName).then(result => {
+        alert('Success');
+      });
+    });
+  };
+
+  uploadImage = async (uri, name) => {
+    console.log(uri, name);
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    let m = {
+      _id: 1,
+      text: 'My message',
+      createdAt: new Date(Date.UTC(2016, 5, 11, 17, 20, 0)),
+      user: {
+        _id: 2,
+        name: 'React Native',
+        avatar: 'https://facebook.github.io/react/img/logo_og.png',
+      },
+      image: uri,
+    };
+    this.setState(previousState => ({
+      messageList: GiftedChat.append(previousState.messageList, m),
+    }));
+    var ref = firebase
+      .storage()
+      .ref()
+      .child('images/' + name);
+    return ref.put(blob);
+  };
+
+  renderCustomActions = () => {
+    return (
+      <View style={styles.customActionsContainer}>
+        <TouchableOpacity onPress={this.handleChoosePhoto}>
+          <View style={styles.buttonContainer}>
+            <Image
+              source={require('../assets/photo.png')}
+              style={{width: 25, height: 25}}
+            />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity>
+          <View style={styles.buttonContainer}>
+            <Image
+              source={require('../assets/attachment.png')}
+              style={{width: 25, height: 25}}
+            />
+          </View>
+        </TouchableOpacity>
+      </View>
+    );
+  };
   render() {
     return (
       <GiftedChat
@@ -100,7 +170,28 @@ export default class ChatScreen extends React.Component {
         onSend={this.send}
         user={this.user}
         showUserAvatar={true}
+        renderActions={this.renderCustomActions}
       />
     );
   }
 }
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+  },
+  buttonContainer: {
+    padding: 10,
+  },
+  customActionsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  loader: {
+    paddingTop: 20,
+  },
+  sendLoader: {
+    marginRight: 10,
+    marginBottom: 10,
+  },
+});
