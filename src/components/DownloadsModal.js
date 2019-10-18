@@ -1,9 +1,8 @@
 import React, {Component} from 'react';
-import {Modal, View, Text, TouchableOpacity} from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
+import {Modal, View, Text, TouchableOpacity, Image} from 'react-native';
 import DownloadsList from './DownloadsList';
 
-const DownloadsModal = ({is_visible, files, closeModal}) => {
+const DownloadsModal = ({is_visible, files, closeModal, path}) => {
   return (
     <Modal
       animationType="slide"
@@ -18,12 +17,14 @@ const DownloadsModal = ({is_visible, files, closeModal}) => {
           <View style={styles.modalHeader}>
             <Text style={styles.modalHeaderText}>Files</Text>
             <TouchableOpacity onPress={closeModal}>
-              {/* <MaterialIcons name="close" size={25} color="#333" /> */}
-              <Icon name="close" size={25} />
+              <Image
+                source={require('../assets/close.png')}
+                style={{width: 25, height: 25}}
+              />
             </TouchableOpacity>
           </View>
 
-          <DownloadsList files={files} />
+          <DownloadsList files={files} path={path} />
         </View>
       </View>
     </Modal>

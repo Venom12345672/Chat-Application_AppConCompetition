@@ -3,14 +3,22 @@ import {GiftedChat} from 'react-native-gifted-chat';
 import PubNubReact from 'pubnub-react';
 import User from '../User';
 import ImagePicker from 'react-native-image-picker';
+import DownloadsModal from './DownloadsModal';
+import ActionSheet from 'react-native-actionsheet';
+var RNFS = require('react-native-fs');
+
 import {
   View,
   TouchableOpacity,
   Image,
   ToastAndroid,
   StyleSheet,
+  Text,
+  Vibration,
 } from 'react-native';
 import firebase from 'firebase';
+const DURATION = 100;
+
 export default class ChatScreen extends React.Component {
   constructor(props) {
     super(props);
@@ -47,6 +55,7 @@ export default class ChatScreen extends React.Component {
           });
         }
       });
+
     this.pubnub.subscribe({
       channels: [this.state.currentChannel],
       withPresence: true,
@@ -56,7 +65,7 @@ export default class ChatScreen extends React.Component {
       {
         channel: this.state.currentChannel,
         reverse: true,
-        count: 15,
+        count: 50,
       },
       (status, res) => {
         let newmessage = [];
@@ -73,6 +82,8 @@ export default class ChatScreen extends React.Component {
     );
 
     this.pubnub.getMessage(this.state.currentChannel, msg => {
+      Vibration.vibrate(DURATION);
+
       this.setState(previousState => ({
         messages: GiftedChat.append(previousState.messages, msg['message']),
       }));
@@ -109,17 +120,17 @@ export default class ChatScreen extends React.Component {
         });
     });
   };
-
+  viewFiles = async () => {
+    this.setState({
+      is_modal_visible: true,
+    });
+  };
+  closeModal = () => {
+    this.setState({
+      is_modal_visible: false,
+    });
+  };
   uploadImage = async (uri, name) => {
-    console.log(uri, name);
-    // this.setState(prevState => ({
-    //   files: prevState.files.concat({
-    //     name: name,
-    //     link: uri,
-    //     type: 'image',
-    //     id: 1,
-    //   }),
-    // }));
     const response = await fetch(uri);
     const blob = await response.blob();
     m = [
@@ -132,6 +143,8 @@ export default class ChatScreen extends React.Component {
           name: User.username,
         },
         image: uri,
+        fileName: name,
+        type: 'image',
       },
     ];
     this.onSend(m);
@@ -158,19 +171,46 @@ export default class ChatScreen extends React.Component {
       </View>
     );
   };
-
+  longPress = async (context, message) => {
+    if (message.fileName) {
+      Vibration.vibrate(DURATION);
+      ToastAndroid.show('Downloading...', ToastAndroid.SHORT);
+      await RNFS.mkdir(`/storage/emulated/0/FirebaseChatDownloads`)
+        .then(() => {})
+        .catch(err => {
+          console.log(err);
+        });
+      const ref = firebase
+        .storage()
+        .ref(`${this.state.currentChannel}/${message.fileName}`);
+      const url = await ref.getDownloadURL();
+      const response = await fetch(url);
+      const DownloadFileOptions = {
+        fromUrl: url,
+        toFile: `/storage/emulated/0/FirebaseChatDownloads/${message.fileName}`,
+      };
+      const {jobId, promise} = await RNFS.downloadFile(DownloadFileOptions);
+      promise.then(result => {
+        console.log(result);
+        ToastAndroid.show('Download Compelete...', ToastAndroid.SHORT);
+      });
+    }
+  };
   render() {
     return (
-      <GiftedChat
-        messages={this.state.messages}
-        onSend={messages => this.onSend(messages)}
-        renderActions={this.renderCustomActions}
-        user={{
-          _id: User.username,
-          name: User.username,
-        }}
-        alwaysShowSend = {true}
-      />
+      <View style={styles.container}>
+        <GiftedChat
+          messages={this.state.messages}
+          onSend={messages => this.onSend(messages)}
+          renderActions={this.renderCustomActions}
+          user={{
+            _id: User.username,
+            name: User.username,
+          }}
+          alwaysShowSend={true}
+          onLongPress={(context, message) => this.longPress(context, message)}
+        />
+      </View>
     );
   }
 }

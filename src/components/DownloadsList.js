@@ -5,9 +5,8 @@ import {
   FlatList,
   TouchableOpacity,
   Image,
-  Linking,
+  ToastAndroid,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/AntDesign';
 import firebase from 'firebase';
 var RNFS = require('react-native-fs');
 
@@ -38,21 +37,20 @@ export default class DownloadsList extends Component {
               resizeMode={'contain'}
             />
           )}
-          {/* 
+          
           {item.type != 'image' && (
-            <Image
-              style={styles.image}
-              source={require('../../assets/placeholder.png')}
-              resizeMode={'contain'}
-            />
-          )} */}
+           <Text>Hamzah</Text>
+          )}
 
           <Text style={styles.filename}>{item.name.substr(0, 20)}...</Text>
         </View>
 
-        <TouchableOpacity onPress={this.handler(item.name, item.link)}>
+        <TouchableOpacity onPress={() => this.handler(item.name, item.link)}>
           <View style={[styles.buttonContainer, styles.buttonDownload]}>
-            <Icon name="download" size={28} color="#4591f3" />
+            <Image
+              source={require('../assets/download.png')}
+              style={{width: 25, height: 25}}
+            />
           </View>
         </TouchableOpacity>
       </View>
@@ -62,14 +60,14 @@ export default class DownloadsList extends Component {
     this.download(n, l);
   };
   download = async (n, l) => {
+    ToastAndroid.show('Downloading...', ToastAndroid.SHORT);
+
     await RNFS.mkdir(`/storage/emulated/0/FirebaseChatDownloads`)
-      .then(() => {
-        alert('Success');
-      })
+      .then(() => {})
       .catch(err => {
         console.log(err);
       });
-    const ref = firebase.storage().ref(`documents/${n}`);
+    const ref = firebase.storage().ref(`${this.props.path}/${n}`);
     const url = await ref.getDownloadURL();
     const response = await fetch(url);
     const DownloadFileOptions = {
@@ -79,10 +77,8 @@ export default class DownloadsList extends Component {
     const {jobId, promise} = await RNFS.downloadFile(DownloadFileOptions);
     promise.then(result => {
       console.log(result);
+      ToastAndroid.show('Download Compelete...', ToastAndroid.SHORT);
     });
-  };
-  downloadFile = async item => {
-    Linking.openURL(item.link);
   };
 }
 
