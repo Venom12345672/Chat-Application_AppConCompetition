@@ -4,7 +4,7 @@ import PubNubReact from 'pubnub-react';
 import User from '../User';
 import ImagePicker from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
-var RNFS = require('react-native-fs');
+ var RNFS = require('react-native-fs');
 
 import {
   View,

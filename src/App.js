@@ -62,8 +62,8 @@ const AppStack = createStackNavigator({
   ProfileScreen: ProfileScreen,
 });
 const AuthStack = createStackNavigator({
-  LandingScreen: LandingScreen,
-  Login: LoginScreen,
+  LandingScreen: LoginScreen,
+  // Login: LoginScreen,
   SignUp: SignUpScreen,
 });
 
