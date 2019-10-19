@@ -3,8 +3,7 @@ import {GiftedChat} from 'react-native-gifted-chat';
 import PubNubReact from 'pubnub-react';
 import User from '../User';
 import ImagePicker from 'react-native-image-picker';
-import DownloadsModal from './DownloadsModal';
-import ActionSheet from 'react-native-actionsheet';
+import DocumentPicker from 'react-native-document-picker';
 var RNFS = require('react-native-fs');
 
 import {
@@ -34,6 +33,7 @@ export default class ChatScreen extends React.Component {
     this.pubnub = new PubNubReact({
       publishKey: 'pub-c-1a256bc0-f516-4140-83e1-2cd02f72e19b',
       subscribeKey: 'sub-c-1a959da8-ebfb-11e9-ad72-8e6732c0d56b',
+      secretKey: 'sec-c-MDE2ODIyYWMtYzljNC00NGQ4LTk0ODYtOTg1YjZiYjliMTE3',
     });
     this.pubnub.init(this);
     this.id = this.randomid();
@@ -56,6 +56,15 @@ export default class ChatScreen extends React.Component {
         }
       });
 
+    // this.pubnub.deleteMessages(
+    //   {
+    //     channel: 'hamzah123minhal123',
+    //   },
+    //   result => {
+    //     console.log(this.state.currentChannel);
+    //     console.log(result);
+    //   },
+    // );
     this.pubnub.subscribe({
       channels: [this.state.currentChannel],
       withPresence: true,
@@ -101,6 +110,20 @@ export default class ChatScreen extends React.Component {
       message: messages,
       channel: this.state.currentChannel,
     });
+    console.log(messages);
+    this.pubnub.publish(
+      {
+        message: {
+          pn_gcm: {
+            data: {message: `${User.username}: ${messages[0].text}`},
+          },
+        },
+        channel: this.state.person.username,
+      },
+      status => {
+        console.log(User.name);
+      },
+    );
   }
   randomid = () => {
     return Math.floor(Math.random() * 100);
@@ -120,23 +143,15 @@ export default class ChatScreen extends React.Component {
         });
     });
   };
-  viewFiles = async () => {
-    this.setState({
-      is_modal_visible: true,
-    });
-  };
-  closeModal = () => {
-    this.setState({
-      is_modal_visible: false,
-    });
-  };
+
   uploadImage = async (uri, name) => {
     const response = await fetch(uri);
     const blob = await response.blob();
-    m = [
+    console.log(uri);
+    let m = [
       {
         _id: 1,
-        text: 'Image Attached',
+        text: `${name} attached \n (Long Press the message bubble to download it)`,
         createdAt: new Date(),
         user: {
           _id: User.username,
@@ -156,7 +171,51 @@ export default class ChatScreen extends React.Component {
 
     return ref.put(blob);
   };
-
+  handleDocument = async () => {
+    try {
+      const res = await DocumentPicker.pick({
+        type: [DocumentPicker.types.allFiles],
+      });
+      console.log(res, 'BAIG');
+      const response = await fetch(res.uri);
+      const blob = await response.blob();
+      let m = [
+        {
+          _id: 1,
+          text: `${res.name} attached \n (Long Press the message bubble to download it)`,
+          createdAt: new Date(),
+          user: {
+            _id: User.username,
+            name: User.username,
+          },
+          fileName: res.name,
+          type: 'file',
+        },
+      ];
+      this.onSend(m);
+      ToastAndroid.show('Sending File...', ToastAndroid.SHORT);
+      var ref = firebase
+        .storage()
+        .ref()
+        .child(this.state.currentChannel + '/' + res.name)
+        .put(blob)
+        .then(result => {
+          ToastAndroid.show('File Sent...', ToastAndroid.SHORT);
+        })
+        .catch(() => {
+          ToastAndroid.show(
+            'Failed. Please Try again later...',
+            ToastAndroid.SHORT,
+          );
+        });
+    } catch (err) {
+      if (DocumentPicker.isCancel(err)) {
+        // User cancelled the picker, exit any dialogs or menus and move on
+      } else {
+        throw err;
+      }
+    }
+  };
   renderCustomActions = () => {
     return (
       <View style={styles.customActionsContainer}>
@@ -164,6 +223,15 @@ export default class ChatScreen extends React.Component {
           <View style={styles.buttonContainer}>
             <Image
               source={require('../assets/photo.png')}
+              style={{width: 25, height: 25}}
+            />
+          </View>
+        </TouchableOpacity>
+
+        <TouchableOpacity onPress={this.handleDocument}>
+          <View style={styles.buttonContainer}>
+            <Image
+              source={require('../assets/attachment.png')}
               style={{width: 25, height: 25}}
             />
           </View>
