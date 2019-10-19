@@ -10,7 +10,7 @@ import {
   Image,
   StyleSheet,
   ImageBackground,
-  KeyboardAvoidingView,
+  ToastAndroid,
 } from 'react-native';
 import firebase from 'firebase';
 import User from '../User';
@@ -25,6 +25,7 @@ export default class SignUpScreen extends React.Component {
     confirmPassword: '',
     photo: null,
     isFocused: [false, false, false, false],
+    link: null,
   };
   handleFocus = key => {
     let temp = this.state.isFocused;
@@ -50,9 +51,24 @@ export default class SignUpScreen extends React.Component {
         username: this.state.username,
         password: this.state.password,
         friends: null,
+        profileLink: this.state.link,
       });
   };
-
+  checkSpecialCharacters = u => {
+    for (let i = 0; i < u.length; i++) {
+      if (
+        u[i] == '.' ||
+        u[i] == '/' ||
+        u[i] == '\\' ||
+        u[i] == ',' ||
+        u[i] == '*' ||
+        u[i] == ':'
+      ) {
+        return true;
+      }
+    }
+    return false;
+  };
   signUpHandler = async () => {
     if (
       this.state.username == '' ||
@@ -68,6 +84,10 @@ export default class SignUpScreen extends React.Component {
         'Sign Up Failed',
         'Username lenght should be greater than 8 characters.',
       );
+      return;
+    }
+    if (this.checkSpecialCharacters(this.state.username)) {
+      Alert.alert('Sign Up Failed', `Username cannot have . \\ / : * ,`);
       return;
     }
     if (this.state.password.length < 8) {
@@ -89,13 +109,41 @@ export default class SignUpScreen extends React.Component {
       .orderByChild('username')
       .equalTo(this.state.username)
       .once('value')
-      .then(snapshot => {
+      .then(async snapshot => {
         if (snapshot.val()) {
           Alert.alert('Sign Up Failed', 'Username already taken.');
           return;
         } else {
-          this.userEntry();
-          this.props.navigation.navigate('App');
+          if (this.state.photo) {
+            this.uploadImage(User.photo.uri, User.photo.fileName)
+              .then(async result => {
+                ToastAndroid.show(
+                  'Congratulaions!! New profile created...',
+                  ToastAndroid.SHORT,
+                );
+                const ref = firebase
+                  .storage()
+                  .ref(`${this.state.username}/${User.photo.fileName}`);
+                const url = await ref.getDownloadURL();
+                this.setState({link: url});
+                this.userEntry(); // enter user in database
+                this.props.navigation.navigate('App');
+              })
+              .catch(() => {
+                ToastAndroid.show(
+                  'Failed. Please Try again later...',
+                  ToastAndroid.SHORT,
+                );
+              });
+          } else {
+            ToastAndroid.show(
+              'Congratulaions!! New profile created...',
+              ToastAndroid.SHORT,
+            );
+            this.setState({link: 'NaN'});
+            this.userEntry(); // enter user in database
+            this.props.navigation.navigate('App');
+          }
         }
       });
   };
@@ -107,61 +155,46 @@ export default class SignUpScreen extends React.Component {
     ImagePicker.launchImageLibrary(options, response => {
       if (response.uri) {
         this.setState({photo: response});
+        User.photo = response;
       }
     });
   };
+
+  uploadImage = async (uri, name) => {
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    ToastAndroid.show('Creating Account...', ToastAndroid.SHORT);
+    var ref = firebase
+      .storage()
+      .ref()
+      .child(this.state.username + '/' + name);
+
+    return ref.put(blob);
+  };
   render() {
     return (
-      // <SafeAreaView style={styles.container}>
-      //   {this.state.photo && (
-      //     <Image
-      //       source={{uri: this.state.photo.uri}}
-      //       style={{width: 100, height: 100, marginRight: 200, borderRadius: 100}}
-      //     />
-      //   )}
-
-      //   <TextInput
-      //     style={styles.input}
-      //     value={this.state.username}
-      //     placeholder={'Username'}
-      //     onChangeText={this.onChangeHandler('username')}></TextInput>
-      //   <TextInput
-      //     style={styles.input}
-      //     value={this.state.name}
-      //     placeholder={'Name'}
-      //     onChangeText={this.onChangeHandler('name')}></TextInput>
-      //   <TextInput
-      //     secureTextEntry={true}
-      //     style={styles.input}
-      //     value={this.state.password}
-      //     placeholder={'Password'}
-      //     onChangeText={this.onChangeHandler('password')}></TextInput>
-      //   <TextInput
-      //     style={styles.input}
-      //     secureTextEntry={true}
-      //     value={this.state.confirmPassword}
-      //     placeholder={'Confirm Password'}
-      //     onChangeText={this.onChangeHandler('confirmPassword')}></TextInput>
-      //   <TouchableOpacity onPress={this.signUpHandler}>
-      //     <Text style={styles.btn}>Sign Up</Text>
-      //   </TouchableOpacity>
-      //   <TouchableOpacity onPress={this.handleChoosePhoto}>
-      //     <Text style={styles.btn}>Choose Photo</Text>
-      //   </TouchableOpacity>
-      // </SafeAreaView>
       <View style={styles.container}>
         <ImageBackground
           source={require('../assets/wallpaper.png')}
           style={styles.backgorundImage}>
-          <ImageBackground
-            style={{
-              alignSelf: 'center',
-              height: 100,
-              width: 100,
-              backgroundColor: '#e4e4e4',
-              borderRadius: 100,
-              marginTop: 80,
-            }}></ImageBackground>
+          <View style={styles.backButtonContainer}>
+            <TouchableOpacity
+              onPress={() => this.props.navigation.navigate('LandingScreen')}>
+              <Image
+                source={require('../assets/back.png')}
+                style={{width: 30, height: 30, borderRadius: 100}}></Image>
+            </TouchableOpacity>
+          </View>
+
+          <TouchableOpacity
+            onPress={this.handleChoosePhoto}
+            style={styles.profilePhoto}>
+            {this.state.photo ? (
+              <Image
+                source={{uri: this.state.photo.uri}}
+                style={{width: 150, height: 150, borderRadius: 100}}></Image>
+            ) : null}
+          </TouchableOpacity>
           <KeyboardAwareScrollView>
             <TextInput
               style={{width: '90%', alignSelf: 'center', marginTop: 25}}
@@ -253,5 +286,19 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: 'white',
+  },
+  backButtonContainer: {
+    width: '90%',
+    height: 30,
+    alignSelf: 'center',
+    marginTop: 20,
+  },
+  profilePhoto: {
+    height: 150,
+    width: 150,
+    borderRadius: 100,
+    alignSelf: 'center',
+    backgroundColor: '#e4e4e4',
+    marginTop: 40,
   },
 });

@@ -64,7 +64,12 @@ const AppStack = createStackNavigator({
 const AuthStack = createStackNavigator({
   LandingScreen: LoginScreen,
   // Login: LoginScreen,
-  SignUp: SignUpScreen,
+  SignUp: {
+    screen: SignUpScreen,
+    navigationOptions: {
+      header: null,
+    },
+  },
 });
 
 export default createAppContainer(
