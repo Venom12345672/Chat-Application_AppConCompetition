@@ -24,6 +24,17 @@ export default class AuthLoadingScreen extends React.Component {
   _bootstrapAsync = async () => {
     User.username = await AsyncStorage.getItem('username');
     User.name = await AsyncStorage.getItem('name');
+    var ref = firebase.database().ref(`/users`);
+    await ref
+      .orderByChild('username')
+      .equalTo(User.username)
+      .once('value')
+      .then(snapshot => {
+        if (snapshot.val()) {
+          User.photo = snapshot.val()[User.username].profileLink;
+          console.log(User.photo)
+        }
+      });
     this.props.navigation.navigate(User.username ? 'App' : 'Auth');
   };
 

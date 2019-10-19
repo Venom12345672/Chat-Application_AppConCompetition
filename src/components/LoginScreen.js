@@ -51,6 +51,7 @@ export default class LoginScreen extends React.Component {
             User.username = fetchedData.username;
             User.name = fetchedData.name;
             User.password = fetchedData.password;
+            User.photo = fetchedData.profileLink
             this.props.navigation.navigate('App');
             return;
           } else {

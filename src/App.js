@@ -8,12 +8,12 @@ import ChatScreen from './components/ChatScreen';
 import UserProfile from './components/UserProfile';
 import {YellowBox} from 'react-native';
 import _ from 'lodash';
-import SearchScreen from './components/SearchScreen';
 import ProfileScreen from './components/ProfileScree';
 import React from 'react';
 import {TouchableOpacity, Image, Text} from 'react-native';
 import LandingScreen from './components/LandingScreen';
 import SignUpScreen from './components/SignUpScreen';
+import SearchScreen from './components/SearchScreen';
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
 console.warn = message => {
@@ -22,48 +22,30 @@ console.warn = message => {
   }
 };
 
-const Home = createStackNavigator({
-  Home: {
-    screen: HomeScreen,
-    navigationOptions: ({navigation}) => ({
-      title: 'Home',
-      headerRight: (
-        <TouchableOpacity onPress={() => navigation.navigate('ProfileScreen')}>
-          <Image
-            source={require('./assets/user.png')}
-            style={{width: 32, height: 32, marginRight: 7}}
-          />
-        </TouchableOpacity>
-      ),
-    }),
-  },
-});
-const Search = createStackNavigator({
-  Search: {
-    screen: SearchScreen,
-    navigationOptions: {
-      title: 'Search',
-    },
-  },
-});
-const MainStack = createBottomTabNavigator({
-  Home: Home,
-  Search: Search,
-});
 const AppStack = createStackNavigator({
   Home: {
-    screen: MainStack,
+    screen: HomeScreen,
+    navigationOptions: {
+      header: null,
+    },
+  },
+  SearchScreen: {
+    screen: SearchScreen,
     navigationOptions: {
       header: null,
     },
   },
   UserProfile: UserProfile,
   ChatScreen: ChatScreen,
-  ProfileScreen: ProfileScreen,
+  ProfileScreen: {
+    screen: ProfileScreen,
+    navigationOptions: {
+      header: null,
+    },
+  },
 });
 const AuthStack = createStackNavigator({
   LandingScreen: LoginScreen,
-  // Login: LoginScreen,
   SignUp: {
     screen: SignUpScreen,
     navigationOptions: {

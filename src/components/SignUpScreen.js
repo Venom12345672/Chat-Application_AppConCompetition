@@ -16,6 +16,7 @@ import firebase from 'firebase';
 import User from '../User';
 import ImagePicker from 'react-native-image-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
+import * as Animatable from 'react-native-animatable';
 
 export default class SignUpScreen extends React.Component {
   state = {
@@ -178,12 +179,14 @@ export default class SignUpScreen extends React.Component {
           source={require('../assets/wallpaper.png')}
           style={styles.backgorundImage}>
           <View style={styles.backButtonContainer}>
-            <TouchableOpacity
-              onPress={() => this.props.navigation.navigate('LandingScreen')}>
-              <Image
-                source={require('../assets/back.png')}
-                style={{width: 30, height: 30, borderRadius: 100}}></Image>
-            </TouchableOpacity>
+            <Animatable.View animation="slideInLeft">
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('LandingScreen')}>
+                <Image
+                  source={require('../assets/back.png')}
+                  style={{width: 30, height: 30, borderRadius: 100}}></Image>
+              </TouchableOpacity>
+            </Animatable.View>
           </View>
 
           <TouchableOpacity
