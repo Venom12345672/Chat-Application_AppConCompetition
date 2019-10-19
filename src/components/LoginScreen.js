@@ -93,7 +93,6 @@ export default class LoginScreen extends React.Component {
           <Text style={styles.mainHeading}>Hello.</Text>
           <TextInput
             style={{width: '90%', alignSelf: 'center', marginTop: 50}}
-            underlineColorAndroid="#707070"
             placeholder="Username"
             value={this.state.username}
             onChangeText={this.handleChange('username')}
