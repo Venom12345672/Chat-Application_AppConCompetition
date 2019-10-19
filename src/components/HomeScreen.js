@@ -64,6 +64,7 @@ export default class HomeScreen extends React.Component {
   state = {
     users: [],
   };
+
   componentWillMount() {
     let dbRef = firebase.database().ref('users/' + User.username + '/friends/');
     dbRef.on('child_added', val => {
@@ -81,6 +82,7 @@ export default class HomeScreen extends React.Component {
       }
     });
   }
+
   renderRow = ({item}) => {
     return (
       <TouchableOpacity
@@ -114,7 +116,14 @@ export default class HomeScreen extends React.Component {
           source={require('../assets/wallpaper1.png')}
           style={styles.backgorundImage}>
           <TouchableOpacity
-            onPress={() => this.props.navigation.navigate('ProfileScreen')}>
+            onPress={() =>
+              this.props.navigation.navigate('ProfileScreen', {
+                refresh: () => {
+                  console.log(User);
+                  this.setState({});
+                },
+              })
+            }>
             <Animatable.View
               animation="slideInRight"
               style={styles.subContainer}>

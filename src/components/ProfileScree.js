@@ -10,11 +10,13 @@ import {
   StyleSheet,
   ImageBackground,
   Image,
+  ToastAndroid,
 } from 'react-native';
 import User from '../User';
 import firebase from 'firebase';
 import PubNubReact from 'pubnub-react';
 import * as Animatable from 'react-native-animatable';
+import ImagePicker from 'react-native-image-picker';
 
 export default class ProfileScreen extends React.Component {
   constructor(props) {
@@ -53,6 +55,8 @@ export default class ProfileScreen extends React.Component {
       User.name = this.state.name;
       this.setState({name: this.state.name});
       await AsyncStorage.setItem('name', this.state.name);
+      let refresh = this.props.navigation.getParam('refresh');
+      refresh();
     }
   };
 
@@ -74,7 +78,51 @@ export default class ProfileScreen extends React.Component {
       },
     );
   };
+  handleChoosePhoto = () => {
+    const options = {noData: true};
+    ImagePicker.launchImageLibrary(options, response => {
+      if (response.uri) {
+        this.uploadImage(response.uri, response.fileName)
+          .then(async result => {
+            ToastAndroid.show('Profile Picture Updated...', ToastAndroid.SHORT);
+            const ref = firebase
+              .storage()
+              .ref(`${this.state.username}/${response.fileName}`);
+            const url = await ref.getDownloadURL();
+            await firebase
+              .database()
+              .ref('users')
+              .child(User.username)
+              .update({
+                profileLink: url,
+              });
+            User.photo = url;
+            let refresh = this.props.navigation.getParam('refresh');
+            refresh();
+          })
+          .catch(() => {
+            ToastAndroid.show(
+              'Failed. Please Try again later...',
+              ToastAndroid.SHORT,
+            );
+          });
+      }
+    });
+  };
 
+  uploadImage = async (uri, name) => {
+    User.photo = uri;
+    this.setState({});
+    const response = await fetch(uri);
+    const blob = await response.blob();
+    ToastAndroid.show('Updating Profile Picture...', ToastAndroid.SHORT);
+    var ref = firebase
+      .storage()
+      .ref()
+      .child(this.state.username + '/' + name);
+
+    return ref.put(blob);
+  };
   render() {
     return (
       // <SafeAreaView style={styles.container}>
@@ -106,7 +154,9 @@ export default class ProfileScreen extends React.Component {
             </Animatable.View>
             <Text style={styles.mainHeading}>My Profile</Text>
           </View>
-          <TouchableOpacity style={styles.profilePhoto}>
+          <TouchableOpacity
+            style={styles.profilePhoto}
+            onPress={this.handleChoosePhoto}>
             {User.photo == 'NaN' ? (
               <Image
                 source={require('../assets/NaN.png')}
