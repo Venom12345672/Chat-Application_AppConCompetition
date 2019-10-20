@@ -144,12 +144,14 @@ export default class ProfileScreen extends React.Component {
           source={require('../assets/wallpaper1.png')}
           style={styles.backgorundImage}>
           <View style={styles.backButtonContainer}>
-            <Animatable.View animation="slideInLeft">
+            <Animatable.View
+              animation="slideInLeft"
+              style={{width: 35, borderRightWidth: 2, borderRightColor: '#62B491'}}>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Home')}>
                 <Image
                   source={require('../assets/back.png')}
-                  style={{width: 30, height: 30, borderRadius: 100}}></Image>
+                  style={{width: 25, height: 25, borderRadius: 100}}></Image>
               </TouchableOpacity>
             </Animatable.View>
             <Text style={styles.mainHeading}>My Profile</Text>
@@ -234,7 +236,7 @@ const styles = StyleSheet.create({
     marginTop: 40,
   },
   mainHeading: {
-    marginLeft: 20,
+    marginLeft: 10,
     fontSize: 30,
     fontWeight: 'bold',
     color: '#679AC6',
@@ -253,6 +255,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
+    elevation: 5,
   },
   changeNameText: {
     fontSize: 14,
@@ -265,6 +268,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
+    elevation: 5,
   },
   logoutText: {
     fontSize: 14,

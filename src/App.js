@@ -35,7 +35,12 @@ const AppStack = createStackNavigator({
       header: null,
     },
   },
-  UserProfile: UserProfile,
+  UserProfile: {
+    screen: UserProfile,
+    navigationOptions: {
+      header: null
+    }
+  },
   ChatScreen: ChatScreen,
   ProfileScreen: {
     screen: ProfileScreen,

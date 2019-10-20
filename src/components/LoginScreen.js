@@ -155,6 +155,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
+    elevation: 5
+
   },
   loginText: {
     fontSize: 14,
@@ -167,6 +169,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
+    elevation: 5
+
   },
   signUpText: {
     fontSize: 14,

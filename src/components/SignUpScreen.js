@@ -179,12 +179,18 @@ export default class SignUpScreen extends React.Component {
           source={require('../assets/wallpaper.png')}
           style={styles.backgorundImage}>
           <View style={styles.backButtonContainer}>
-            <Animatable.View animation="slideInLeft">
+            <Animatable.View
+              animation="slideInLeft"
+              style={{
+                width: 35,
+                borderRightWidth: 2,
+                borderRightColor: '#62B491',
+              }}>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('LandingScreen')}>
                 <Image
                   source={require('../assets/back.png')}
-                  style={{width: 30, height: 30, borderRadius: 100}}></Image>
+                  style={{width: 25, height: 25, borderRadius: 100}}></Image>
               </TouchableOpacity>
             </Animatable.View>
           </View>
@@ -284,6 +290,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     borderRadius: 8,
     marginTop: 30,
+    elevation: 5,
   },
   signUpText: {
     fontSize: 14,

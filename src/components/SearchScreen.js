@@ -81,7 +81,9 @@ export default class SearchScreen extends React.Component {
           source={require('../assets/wallpaper1.png')}
           style={styles.backgorundImage}>
           <View style={styles.backButtonContainer}>
-            <Animatable.View animation="slideInLeft">
+          <Animatable.View
+              animation="slideInLeft"
+              style={{width: 35, borderRightWidth: 2, borderRightColor: '#62B491'}}>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Home')}>
                 <Image
@@ -121,7 +123,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   mainHeading: {
-    marginLeft: 20,
+    marginLeft: 10,
     fontSize: 30,
     fontWeight: 'bold',
     color: '#679AC6',
