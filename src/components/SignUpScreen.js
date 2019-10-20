@@ -44,6 +44,7 @@ export default class SignUpScreen extends React.Component {
     User.username = this.state.username;
     User.name = this.state.name;
     User.password = this.state.password;
+    User.photo = this.state.link;
     firebase
       .database()
       .ref('users/' + User.username)
@@ -116,7 +117,7 @@ export default class SignUpScreen extends React.Component {
           return;
         } else {
           if (this.state.photo) {
-            this.uploadImage(User.photo.uri, User.photo.fileName)
+            this.uploadImage(this.state.photo.uri, this.state.photo.fileName)
               .then(async result => {
                 ToastAndroid.show(
                   'Congratulaions!! New profile created...',
@@ -124,7 +125,7 @@ export default class SignUpScreen extends React.Component {
                 );
                 const ref = firebase
                   .storage()
-                  .ref(`${this.state.username}/${User.photo.fileName}`);
+                  .ref(`${this.state.username}/${this.state.photo.fileName}`);
                 const url = await ref.getDownloadURL();
                 this.setState({link: url});
                 this.userEntry(); // enter user in database
@@ -156,7 +157,6 @@ export default class SignUpScreen extends React.Component {
     ImagePicker.launchImageLibrary(options, response => {
       if (response.uri) {
         this.setState({photo: response});
-        User.photo = response.uri;
       }
     });
   };

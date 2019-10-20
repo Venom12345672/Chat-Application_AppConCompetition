@@ -4,7 +4,9 @@ import PubNubReact from 'pubnub-react';
 import User from '../User';
 import ImagePicker from 'react-native-image-picker';
 import DocumentPicker from 'react-native-document-picker';
- var RNFS = require('react-native-fs');
+import * as Animatable from 'react-native-animatable';
+
+var RNFS = require('react-native-fs');
 
 import {
   View,
@@ -14,6 +16,7 @@ import {
   StyleSheet,
   Text,
   Vibration,
+  ImageBackground,
 } from 'react-native';
 import firebase from 'firebase';
 const DURATION = 100;
@@ -27,6 +30,7 @@ export default class ChatScreen extends React.Component {
       person: {
         name: props.navigation.getParam('name'),
         username: props.navigation.getParam('username'),
+        profileLink: props.navigation.getParam('profileLink'),
       },
       currentChannel: '',
     };
@@ -267,17 +271,49 @@ export default class ChatScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
-        <GiftedChat
-          messages={this.state.messages}
-          onSend={messages => this.onSend(messages)}
-          renderActions={this.renderCustomActions}
-          user={{
-            _id: User.username,
-            name: User.username,
-          }}
-          alwaysShowSend={true}
-          onLongPress={(context, message) => this.longPress(context, message)}
-        />
+        <ImageBackground
+          source={require('../assets/wallpaper1.png')}
+          style={styles.backgorundImage}>
+          <View style={styles.backButtonContainer}>
+            <Animatable.View
+              animation="slideInLeft"
+              style={{
+                width: 35,
+                borderRightWidth: 2,
+                borderRightColor: '#62B491',
+              }}>
+              <TouchableOpacity
+                onPress={() => this.props.navigation.navigate('Home')}>
+                <Image
+                  source={require('../assets/back.png')}
+                  style={{width: 25, height: 25, borderRadius: 100}}></Image>
+              </TouchableOpacity>
+            </Animatable.View>
+            <Image
+              source={
+                this.state.person.profileLink == 'NaN'
+                  ? require('../assets/NaN.png')
+                  : {uri: this.state.person.profileLink}
+              }
+              style={{width: 35, height: 35, borderRadius: 100, marginLeft: 10}}></Image>
+            <Text style={styles.mainHeading}>{this.state.person.name}</Text>
+          </View>
+          <GiftedChat
+            messages={this.state.messages}
+            onSend={messages => this.onSend(messages)}
+            renderActions={this.renderCustomActions}
+            user={{
+              _id: User.username,
+              name: User.name,
+              avatar:
+                User.photo == 'NaN'
+                  ? require('../assets/NaN.png')
+                  : User.photo,
+            }}
+            alwaysShowSend={true}
+            onLongPress={(context, message) => this.longPress(context, message)}
+          />
+        </ImageBackground>
       </View>
     );
   }
@@ -300,5 +336,20 @@ const styles = StyleSheet.create({
   sendLoader: {
     marginRight: 10,
     marginBottom: 10,
+  },
+  backgorundImage: {width: '100%', height: '100%'},
+  backButtonContainer: {
+    width: '90%',
+    height: 50,
+    alignSelf: 'center',
+    marginTop: 20,
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  mainHeading: {
+    marginLeft: 10,
+    fontSize: 25,
+    fontWeight: 'bold',
+    color: '#679AC6',
   },
 });

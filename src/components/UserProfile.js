@@ -28,6 +28,7 @@ export default class UserProfile extends React.Component {
       username: this.state.seacrhedUser.username,
       name: this.state.seacrhedUser.name,
       channelKey: User.username + this.state.seacrhedUser.username,
+      profileLink: this.state.seacrhedUser.profileLink,
     });
     var otherFriendListRef = firebase
       .database()
@@ -37,7 +38,16 @@ export default class UserProfile extends React.Component {
       username: User.username,
       name: User.name,
       channelKey: User.username + this.state.seacrhedUser.username,
+      profileLink: User.photo,
     });
+    let item = {
+      name: this.state.seacrhedUser.name,
+      channelKey: User.username + this.state.seacrhedUser.username,
+      username: this.state.seacrhedUser.username,
+      profileLink: this.state.seacrhedUser.profileLink,
+    };
+    console.log(item, 'CHECK');
+    this.props.navigation.navigate('ChatScreen', item);
   };
   render() {
     return (

@@ -69,7 +69,7 @@ export default class HomeScreen extends React.Component {
     let dbRef = firebase.database().ref('users/' + User.username + '/friends/');
     dbRef.on('child_added', val => {
       let person = val.val();
-      console.log(person);
+      console.log(person, 'CHECK');
       //person.username = val.username
       if (person.username == User.username) {
         //User.name = person.name
@@ -84,11 +84,19 @@ export default class HomeScreen extends React.Component {
   }
 
   renderRow = ({item}) => {
+    console.log(item);
     return (
       <TouchableOpacity
         onPress={() => this.props.navigation.navigate('ChatScreen', item)}
-        style={{padding: 10, borderBottomColor: '#ccc', borderBottomWidth: 1}}>
-        <Text style={{fontSize: 20}}>{item.name}</Text>
+        style={{marginTop: 20, flexDirection: 'row', alignItems: 'center'}}>
+        <Image
+          source={
+            item.profileLink == 'NaN'
+              ? require('../assets/NaN.png')
+              : {uri: item.profileLink}
+          }
+          style={styles.userPhoto}></Image>
+        <Text style={{fontSize: 20, marginLeft: 15}}>{item.name}</Text>
       </TouchableOpacity>
     );
   };
@@ -103,11 +111,7 @@ export default class HomeScreen extends React.Component {
   render() {
     return (
       // <SafeAreaView>
-      //   <FlatList
-      //     data={this.state.users}
-      //     renderItem={this.renderRow}
-      //     keyExtractor={item => item.username}
-      //   />
+
       // </SafeAreaView>
       <View style={styles.container}>
         <StatusBar backgroundColor="#679AC6" barStyle="light-content" />
@@ -158,6 +162,12 @@ export default class HomeScreen extends React.Component {
           <View style={{width: '90%', alignSelf: 'center', marginTop: 30}}>
             <Text style={{color: '#9A9A9A', fontSize: 14}}>All messages</Text>
           </View>
+          <FlatList
+          style={{marginTop:20}}
+            data={this.state.users}
+            renderItem={this.renderRow}
+            keyExtractor={item => item.username}
+          />
           <FloatingAction
             color="#679AC6"
             actions={actions}
@@ -200,5 +210,11 @@ const styles = StyleSheet.create({
     height: 30,
     borderRadius: 100,
     marginLeft: 2,
+  },
+  userPhoto: {
+    height: 45,
+    width: 45,
+    borderRadius: 100,
+    marginLeft: 15,
   },
 });
