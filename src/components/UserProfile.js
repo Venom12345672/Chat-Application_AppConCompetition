@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useReducer} from 'react';
 import {
   View,
   Text,
@@ -31,6 +31,7 @@ export default class UserProfile extends React.Component {
       name: this.state.seacrhedUser.name,
       channelKey: User.username + this.state.seacrhedUser.username,
       profileLink: this.state.seacrhedUser.profileLink,
+      active: false,
     });
     var otherFriendListRef = firebase
       .database()
@@ -41,6 +42,7 @@ export default class UserProfile extends React.Component {
       name: User.name,
       channelKey: User.username + this.state.seacrhedUser.username,
       profileLink: User.photo,
+      active: false,
     });
     let item = {
       name: this.state.seacrhedUser.name,
@@ -51,10 +53,13 @@ export default class UserProfile extends React.Component {
     this.props.navigation.navigate('ChatScreen', item);
   };
   componentDidMount() {
-    for (let i = 0; i < User.friends.length; i++) {
-      if (User.friends[i].username == this.state.seacrhedUser.username) {
-        this.setState({alreadyFriend: true});
-      }
+    // for (let i = 0; i < User.friends; i++) {
+    //   if (User.friends[i].username == this.state.seacrhedUser.username) {
+    //     this.setState({alreadyFriend: true});
+    //   }
+    // }
+    if (User.friends[this.state.seacrhedUser.username]) {
+      this.setState({alreadyFriend: true});
     }
   }
   render() {

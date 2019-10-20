@@ -64,32 +64,13 @@ export default class LoginScreen extends React.Component {
         }
       });
 
-    // this.props.navigation.navigate('App');
   };
   render() {
     return (
-      // <View style={styles.container}>
-      //   <TextInput
-      //     placeholder="Enter Username"
-      //     style={styles.input}
-      //     value={this.state.username}
-      //     onChangeText={this.handleChange('username')}
-      //   />
-      //   <TextInput
-      //     placeholder="Password"
-      //     style={styles.input}
-      //     value={this.state.password}
-      //     secureTextEntry={true}
-      //     onChangeText={this.handleChange('password')}
-      //   />
-      //   <TouchableOpacity onPress={this.submitForm}>
-      //     <Text style={styles.btn}>Enter</Text>
-      //   </TouchableOpacity>
-      // </View>
       <View style={styles.container}>
         <StatusBar backgroundColor="#679AC6" barStyle="light-content" />
         <ImageBackground
-          source={require('../assets/wallpaper.png')}
+          source={require('../assets/wallpaper1.png')}
           style={styles.backgorundImage}>
           <Text style={styles.mainHeading}>Hello.</Text>
           <TextInput

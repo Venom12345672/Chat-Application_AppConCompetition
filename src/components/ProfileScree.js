@@ -32,7 +32,7 @@ export default class ProfileScreen extends React.Component {
     name: User.name,
     isFocused: false,
   };
-
+  
   handleChange = key => val => {
     this.setState({[key]: val});
   };
@@ -62,6 +62,8 @@ export default class ProfileScreen extends React.Component {
 
   logoutHandler = async () => {
     await AsyncStorage.clear();
+    User.friendsList = []
+    User.friends = {}
     this.props.navigation.navigate('Auth');
     this.pubnub.push.removeChannels(
       {

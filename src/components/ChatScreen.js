@@ -33,6 +33,9 @@ export default class ChatScreen extends React.Component {
         profileLink: props.navigation.getParam('profileLink'),
       },
       currentChannel: '',
+      active: null,
+      id1: null,
+      id2: null,
     };
     this.pubnub = new PubNubReact({
       publishKey: 'pub-c-1a256bc0-f516-4140-83e1-2cd02f72e19b',
@@ -44,8 +47,9 @@ export default class ChatScreen extends React.Component {
   }
 
   async componentDidMount() {
-    var ref = await firebase.database().ref(`/users/${User.username}/friends`);
-    await ref
+    await firebase
+      .database()
+      .ref(`/users/${User.username}/friends`)
       .orderByChild('username')
       .equalTo(this.state.person.username)
       .once('value')
@@ -55,14 +59,31 @@ export default class ChatScreen extends React.Component {
             x = x.toJSON();
             this.setState({
               currentChannel: x.channelKey,
+              active: x.active,
+              id1: Object.keys(snapshot.val())[0],
             });
           });
         }
       });
-
+    await firebase
+      .database()
+      .ref(`/users/${this.state.person.username}/friends`)
+      .orderByChild('username')
+      .equalTo(User.username)
+      .once('value')
+      .then(snapshot => {
+        if (snapshot.val()) {
+          snapshot.forEach(x => {
+            x = x.toJSON();
+            this.setState({
+              id2: Object.keys(snapshot.val())[0],
+            });
+          });
+        }
+      });
     // this.pubnub.deleteMessages(
     //   {
-    //     channel: 'minhal123hamzah123',
+    //     channel: 'hamzah123minhal123',
     //   },
     //   result => {
     //     console.log(this.state.currentChannel);
@@ -72,6 +93,15 @@ export default class ChatScreen extends React.Component {
     // this.pubnub.deleteMessages(
     //   {
     //     channel: 'adil123hamzah123',
+    //   },
+    //   result => {
+    //     console.log(this.state.currentChannel);
+    //     console.log(result);
+    //   },
+    // );
+    // this.pubnub.deleteMessages(
+    //   {
+    //     channel: 'minhal123hamzah123',
     //   },
     //   result => {
     //     console.log(this.state.currentChannel);
@@ -119,6 +149,22 @@ export default class ChatScreen extends React.Component {
   }
 
   onSend(messages = []) {
+    if (this.state.active == false) {
+      firebase
+        .database()
+        .ref('users/' + User.username + '/friends/')
+        .child(this.state.id1)
+        .update({active: true});
+      
+      firebase
+        .database()
+        .ref('users/' + this.state.person.username + '/friends/')
+        .child(this.state.id2)
+        .update({active: true});
+
+      
+    }
+
     this.pubnub.publish({
       message: messages,
       channel: this.state.currentChannel,
@@ -134,7 +180,7 @@ export default class ChatScreen extends React.Component {
         channel: this.state.person.username,
       },
       status => {
-        console.log(User.name);
+        console.log(this.state.person.username);
       },
     );
   }
@@ -304,7 +350,12 @@ export default class ChatScreen extends React.Component {
                   ? require('../assets/NaN.png')
                   : {uri: this.state.person.profileLink}
               }
-              style={{width: 35, height: 35, borderRadius: 100, marginLeft: 10}}></Image>
+              style={{
+                width: 35,
+                height: 35,
+                borderRadius: 100,
+                marginLeft: 10,
+              }}></Image>
             <Text style={styles.mainHeading}>{this.state.person.name}</Text>
           </View>
           <GiftedChat
@@ -315,9 +366,7 @@ export default class ChatScreen extends React.Component {
               _id: User.username,
               name: User.name,
               avatar:
-                User.photo == 'NaN'
-                  ? require('../assets/NaN.png')
-                  : User.photo,
+                User.photo == 'NaN' ? require('../assets/NaN.png') : User.photo,
             }}
             alwaysShowSend={true}
             onLongPress={(context, message) => this.longPress(context, message)}

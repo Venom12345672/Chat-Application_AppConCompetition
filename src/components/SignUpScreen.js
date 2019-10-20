@@ -176,7 +176,7 @@ export default class SignUpScreen extends React.Component {
     return (
       <View style={styles.container}>
         <ImageBackground
-          source={require('../assets/wallpaper.png')}
+          source={require('../assets/wallpaper1.png')}
           style={styles.backgorundImage}>
           <View style={styles.backButtonContainer}>
             <Animatable.View

@@ -1,7 +1,8 @@
 const User = {
     username: null,
     name: null,
-    friends: [],
+    friends: {},
+    friendsList: [],
     token: null,
     password: null,
     photo: null

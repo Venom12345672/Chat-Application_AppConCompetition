@@ -14,6 +14,7 @@ import {TouchableOpacity, Image, Text} from 'react-native';
 import LandingScreen from './components/LandingScreen';
 import SignUpScreen from './components/SignUpScreen';
 import SearchScreen from './components/SearchScreen';
+import Friends from './components/Friends';
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
 console.warn = message => {
@@ -38,8 +39,8 @@ const AppStack = createStackNavigator({
   UserProfile: {
     screen: UserProfile,
     navigationOptions: {
-      header: null
-    }
+      header: null,
+    },
   },
   ChatScreen: {
     screen: ChatScreen,
@@ -49,6 +50,12 @@ const AppStack = createStackNavigator({
   },
   ProfileScreen: {
     screen: ProfileScreen,
+    navigationOptions: {
+      header: null,
+    },
+  },
+  FriendsScreen: {
+    screen: Friends,
     navigationOptions: {
       header: null,
     },

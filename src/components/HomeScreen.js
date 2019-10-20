@@ -20,7 +20,7 @@ var PushNotification = require('react-native-push-notification');
 const actions = [
   {
     text: 'Message',
-    name: 'bt_message',
+    name: 'friends',
     position: 1,
     color: '#679AC6',
     icon: require('../assets/message.png'),
@@ -63,42 +63,88 @@ export default class HomeScreen extends React.Component {
 
   state = {
     users: [],
+    count: 1,
   };
-
-  componentWillMount() {
-    let dbRef = firebase.database().ref('users/' + User.username + '/friends/');
-    dbRef.on('child_added', val => {
-      let person = val.val();
-      User.friends.push(person)
-      console.log(User.friends)
-      //person.username = val.username
-      if (person.username == User.username) {
-        //User.name = person.name
-      } else {
-        this.setState(prevState => {
-          return {
-            users: [...prevState.users, person],
-          };
-        });
+  isIn = u => {
+    if (User.friendsList.length > 0) {
+      for (let i = 0; i < User.friendsList.length; i++) {
+        if (User.friendsList[i].username == u) {
+          return i;
+        }
       }
+    }
+    return -1;
+  };
+  async componentDidMount() {
+    const {navigation} = this.props;
+
+    this.focusListener = navigation.addListener('didFocus', async () => {
+      let friend = {};
+      let dbRef = await firebase
+        .database()
+        .ref('users/' + User.username + '/friends/');
+      dbRef.once('child_added', async val => {
+        let person = val.val();
+        friend['username'] = person.username;
+        friend['active'] = person.active;
+        User.friends[person.username] = friend;
+        await firebase
+          .database()
+          .ref('users/' + person.username)
+          .on('value', snapshot => {
+            let value = snapshot.val();
+            User.friends[value.username]['name'] = value.name;
+            User.friends[value.username]['profileLink'] = value.profileLink;
+            let index = this.isIn(value.username);
+            if (index == -1) {
+              User.friendsList.push(User.friends[value.username]);
+            } else {
+              let u = User.friendsList[index].username;
+              User.friendsList[index].active = User.friends[u].active;
+              User.friendsList[index].name = User.friends[u].name;
+              User.friendsList[index].profileLink = User.friends[u].profileLink;
+            }
+            console.log(User.friendsList, 'BCCC');
+            if (friend.username == User.username) {
+              //User.name = person.name
+            } else {
+              this.setState(prevState => {
+                return {
+                  users: User.friendsList,
+                };
+              });
+            }
+            friend = {};
+          });
+      });
     });
+
+    //person.username = val.username
   }
 
+  componentWillUnmount() {
+    // Remove the event listener before removing the screen from the stack
+    this.focusListener.remove();
+  }
   renderRow = ({item}) => {
-    return (
-      <TouchableOpacity
-        onPress={() => this.props.navigation.navigate('ChatScreen', item)}
-        style={{marginTop: 20, flexDirection: 'row', alignItems: 'center'}}>
-        <Image
-          source={
-            item.profileLink == 'NaN'
-              ? require('../assets/NaN.png')
-              : {uri: item.profileLink}
-          }
-          style={styles.userPhoto}></Image>
-        <Text style={{fontSize: 20, marginLeft: 15}}>{item.name}</Text>
-      </TouchableOpacity>
-    );
+    if (item.active == true) {
+      return (
+        <TouchableOpacity
+          onPress={() => this.props.navigation.navigate('ChatScreen', item)}
+          style={{marginTop: 20, flexDirection: 'row', alignItems: 'center'}}>
+          <Image
+            source={
+              item.profileLink == 'NaN'
+                ? require('../assets/NaN.png')
+                : {uri: item.profileLink}
+            }
+            style={styles.userPhoto}></Image>
+          <Text style={{fontSize: 20, marginLeft: 15}}>{item.name}</Text>
+        </TouchableOpacity>
+      );
+    } else {
+      return null;
+    }
   };
   renderName = () => {
     for (let i = 0; i < User.name.length; i++) {
@@ -163,7 +209,7 @@ export default class HomeScreen extends React.Component {
             <Text style={{color: '#9A9A9A', fontSize: 14}}>All messages</Text>
           </View>
           <FlatList
-          style={{marginTop:20}}
+            style={{marginTop: 20}}
             data={this.state.users}
             renderItem={this.renderRow}
             keyExtractor={item => item.username}
@@ -175,6 +221,8 @@ export default class HomeScreen extends React.Component {
               if (name == 'search') {
                 console.log(name);
                 this.props.navigation.navigate('SearchScreen');
+              } else if (name == 'friends') {
+                this.props.navigation.navigate('FriendsScreen');
               }
             }}
           />
