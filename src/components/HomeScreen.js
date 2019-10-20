@@ -104,7 +104,6 @@ export default class HomeScreen extends React.Component {
               User.friendsList[index].name = User.friends[u].name;
               User.friendsList[index].profileLink = User.friends[u].profileLink;
             }
-            console.log(User.friendsList, 'BCCC');
             if (friend.username == User.username) {
               //User.name = person.name
             } else {
@@ -206,7 +205,7 @@ export default class HomeScreen extends React.Component {
             </Animatable.View>
           </TouchableOpacity>
           <View style={{width: '90%', alignSelf: 'center', marginTop: 30}}>
-            <Text style={{color: '#9A9A9A', fontSize: 14}}>All messages</Text>
+            <Text style={{color: '#9A9A9A', fontSize: 14}}>Active Conversations</Text>
           </View>
           <FlatList
             style={{marginTop: 20}}

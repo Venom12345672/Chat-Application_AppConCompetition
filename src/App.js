@@ -15,6 +15,7 @@ import LandingScreen from './components/LandingScreen';
 import SignUpScreen from './components/SignUpScreen';
 import SearchScreen from './components/SearchScreen';
 import Friends from './components/Friends';
+import SplashScreen from './components/SplashScreen';
 YellowBox.ignoreWarnings(['Setting a timer']);
 const _console = _.clone(console);
 console.warn = message => {
@@ -74,12 +75,13 @@ const AuthStack = createStackNavigator({
 export default createAppContainer(
   createSwitchNavigator(
     {
+      SplashScreen: SplashScreen,
       AuthLoading: AuthLoadingScreen,
       App: AppStack,
       Auth: AuthStack,
     },
     {
-      initialRouteName: 'AuthLoading',
+      initialRouteName: 'SplashScreen',
     },
   ),
 );
