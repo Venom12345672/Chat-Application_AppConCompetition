@@ -8,11 +8,12 @@ import {
   Alert,
   ImageBackground,
   StatusBar,
-  ToastAndroid,
   StyleSheet,
 } from 'react-native';
 import User from '../User';
 import firebase from 'firebase';
+import * as Animatable from 'react-native-animatable';
+
 export default class LoginScreen extends React.Component {
   static navigationOptions = {
     header: null,
@@ -51,7 +52,7 @@ export default class LoginScreen extends React.Component {
             User.username = fetchedData.username;
             User.name = fetchedData.name;
             User.password = fetchedData.password;
-            User.photo = fetchedData.profileLink
+            User.photo = fetchedData.profileLink;
             this.props.navigation.navigate('App');
             return;
           } else {
@@ -63,7 +64,6 @@ export default class LoginScreen extends React.Component {
           return;
         }
       });
-
   };
   render() {
     return (
@@ -72,7 +72,10 @@ export default class LoginScreen extends React.Component {
         <ImageBackground
           source={require('../assets/wallpaper1.png')}
           style={styles.backgorundImage}>
-          <Text style={styles.mainHeading}>Hello.</Text>
+          <Animatable.View animation="slideInLeft">
+            <Text style={styles.mainHeading}>Hello.</Text>
+          </Animatable.View>
+
           <TextInput
             style={{width: '90%', alignSelf: 'center', marginTop: 50}}
             placeholder="Username"
@@ -136,8 +139,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    elevation: 5
-
+    elevation: 5,
   },
   loginText: {
     fontSize: 14,
@@ -150,8 +152,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     borderRadius: 8,
-    elevation: 5
-
+    elevation: 5,
   },
   signUpText: {
     fontSize: 14,

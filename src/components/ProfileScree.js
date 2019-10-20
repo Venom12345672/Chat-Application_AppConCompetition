@@ -2,7 +2,6 @@ import React from 'react';
 import {
   View,
   Text,
-  SafeAreaView,
   TextInput,
   TouchableOpacity,
   Alert,
@@ -32,7 +31,7 @@ export default class ProfileScreen extends React.Component {
     name: User.name,
     isFocused: false,
   };
-  
+
   handleChange = key => val => {
     this.setState({[key]: val});
   };
@@ -62,8 +61,8 @@ export default class ProfileScreen extends React.Component {
 
   logoutHandler = async () => {
     await AsyncStorage.clear();
-    User.friendsList = []
-    User.friends = {}
+    User.friendsList = [];
+    User.friends = {};
     this.props.navigation.navigate('Auth');
     this.pubnub.push.removeChannels(
       {
@@ -127,20 +126,6 @@ export default class ProfileScreen extends React.Component {
   };
   render() {
     return (
-      // <SafeAreaView style={styles.container}>
-      //   <Text style={{fontSize: 20}}>{User.username}</Text>
-      //   <Text style={{fontSize: 20}}>{User.name}</Text>
-      //   <TextInput
-      //     style={styles.input}
-      //     value={this.state.name}
-      //     onChangeText={this.handleChange('name')}></TextInput>
-      //   <TouchableOpacity onPress={this.changeName}>
-      //     <Text style={styles.btn}>Change Name</Text>
-      //   </TouchableOpacity>
-      //   <TouchableOpacity onPress={this.logoutHandler}>
-      //     <Text style={styles.btn}>Logout</Text>
-      //   </TouchableOpacity>
-      // </SafeAreaView>
       <View style={styles.container}>
         <ImageBackground
           source={require('../assets/wallpaper1.png')}
@@ -150,8 +135,6 @@ export default class ProfileScreen extends React.Component {
               animation="slideInLeft"
               style={{
                 width: 35,
-                // borderRightWidth: 2,
-                // borderRightColor: '#62B491',
               }}>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Home')}>

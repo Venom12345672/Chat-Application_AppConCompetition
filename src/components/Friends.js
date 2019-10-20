@@ -1,13 +1,11 @@
 import React from 'react';
 import {
-  SafeAreaView,
   Text,
   TouchableOpacity,
   FlatList,
   StyleSheet,
   View,
   ImageBackground,
-  StatusBar,
   Image,
 } from 'react-native';
 import User from '../User';

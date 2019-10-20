@@ -7,7 +7,6 @@ import {
   ImageBackground,
   StyleSheet,
   Image,
-  ToastAndroid
 } from 'react-native';
 import firebase from 'firebase';
 import User from '../User';

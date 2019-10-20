@@ -47,6 +47,7 @@ export default class ChatScreen extends React.Component {
   }
 
   async componentDidMount() {
+    ToastAndroid.show('Loading Previous Messages if any...', ToastAndroid.SHORT);
     await firebase
       .database()
       .ref(`/users/${User.username}/friends`)
@@ -334,8 +335,6 @@ export default class ChatScreen extends React.Component {
               animation="slideInLeft"
               style={{
                 width: 35,
-                // borderRightWidth: 2,
-                // borderRightColor: '#62B491',
               }}>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Home')}>

@@ -11,7 +11,6 @@ import {
 import User from '../User';
 import firebase from 'firebase';
 import * as Animatable from 'react-native-animatable';
-import {checkPropTypes} from 'prop-types';
 
 export default class UserProfile extends React.Component {
   constructor(props) {
@@ -53,21 +52,12 @@ export default class UserProfile extends React.Component {
     this.props.navigation.navigate('ChatScreen', item);
   };
   componentDidMount() {
-    // for (let i = 0; i < User.friends; i++) {
-    //   if (User.friends[i].username == this.state.seacrhedUser.username) {
-    //     this.setState({alreadyFriend: true});
-    //   }
-    // }
     if (User.friends[this.state.seacrhedUser.username]) {
       this.setState({alreadyFriend: true});
     }
   }
   render() {
     return (
-      // <View style={styles.container}>
-      //   <Text>{this.state.seacrhedUser.name}</Text>
-      //   <Button onPress={this.addFriend} title="Start Chatting!"></Button>
-      // </View>
       <View style={styles.container}>
         <ImageBackground
           source={require('../assets/wallpaper1.png')}
@@ -77,8 +67,6 @@ export default class UserProfile extends React.Component {
               animation="slideInLeft"
               style={{
                 width: 35,
-                // borderRightWidth: 2,
-                // borderRightColor: '#62B491',
               }}>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Home')}>
