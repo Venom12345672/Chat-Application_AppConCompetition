@@ -146,7 +146,11 @@ export default class ProfileScreen extends React.Component {
           <View style={styles.backButtonContainer}>
             <Animatable.View
               animation="slideInLeft"
-              style={{width: 35, borderRightWidth: 2, borderRightColor: '#62B491'}}>
+              style={{
+                width: 35,
+                // borderRightWidth: 2,
+                // borderRightColor: '#62B491',
+              }}>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Home')}>
                 <Image

@@ -11,12 +11,14 @@ import {
 import User from '../User';
 import firebase from 'firebase';
 import * as Animatable from 'react-native-animatable';
+import {checkPropTypes} from 'prop-types';
 
 export default class UserProfile extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       seacrhedUser: props.navigation.state.params,
+      alreadyFriend: false,
     };
   }
   addFriend = () => {
@@ -46,9 +48,15 @@ export default class UserProfile extends React.Component {
       username: this.state.seacrhedUser.username,
       profileLink: this.state.seacrhedUser.profileLink,
     };
-    console.log(item, 'CHECK');
     this.props.navigation.navigate('ChatScreen', item);
   };
+  componentDidMount() {
+    for (let i = 0; i < User.friends.length; i++) {
+      if (User.friends[i].username == this.state.seacrhedUser.username) {
+        this.setState({alreadyFriend: true});
+      }
+    }
+  }
   render() {
     return (
       // <View style={styles.container}>
@@ -64,8 +72,8 @@ export default class UserProfile extends React.Component {
               animation="slideInLeft"
               style={{
                 width: 35,
-                borderRightWidth: 2,
-                borderRightColor: '#62B491',
+                // borderRightWidth: 2,
+                // borderRightColor: '#62B491',
               }}>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Home')}>
@@ -77,22 +85,26 @@ export default class UserProfile extends React.Component {
             <Text style={styles.mainHeading}>User Profile</Text>
           </View>
           <View style={styles.profilePhoto}>
-            {User.photo == 'NaN' ? (
-              <Image
-                source={require('../assets/NaN.png')}
-                style={{width: 150, height: 150, borderRadius: 100}}></Image>
-            ) : (
-              <Image
-                source={{uri: this.state.seacrhedUser.profileLink}}
-                style={{width: 150, height: 150, borderRadius: 100}}></Image>
-            )}
+            <Image
+              source={
+                this.state.seacrhedUser.profileLink == 'NaN'
+                  ? require('../assets/NaN.png')
+                  : {uri: this.state.seacrhedUser.profileLink}
+              }
+              style={{width: 150, height: 150, borderRadius: 100}}></Image>
           </View>
           <Text style={styles.nameText}>{this.state.seacrhedUser.name}</Text>
-          <TouchableOpacity
-            style={styles.letsConnectContainer}
-            onPress={this.addFriend}>
-            <Text style={styles.letsConnectText}>LETS CONNECT.</Text>
-          </TouchableOpacity>
+          {this.state.alreadyFriend ? (
+            <TouchableOpacity style={styles.connectedContainer}>
+              <Text style={styles.letsConnectText}>CONNECTED</Text>
+            </TouchableOpacity>
+          ) : (
+            <TouchableOpacity
+              style={styles.letsConnectContainer}
+              onPress={this.addFriend}>
+              <Text style={styles.letsConnectText}>LETS CONNECT.</Text>
+            </TouchableOpacity>
+          )}
         </ImageBackground>
       </View>
     );
@@ -135,6 +147,17 @@ const styles = StyleSheet.create({
   },
   letsConnectContainer: {
     backgroundColor: '#62B491',
+    width: 150,
+    height: 50,
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 8,
+    marginTop: 100,
+    elevation: 5,
+  },
+  connectedContainer: {
+    backgroundColor: '#679AC6',
     width: 150,
     height: 50,
     alignSelf: 'center',

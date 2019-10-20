@@ -62,7 +62,16 @@ export default class ChatScreen extends React.Component {
 
     // this.pubnub.deleteMessages(
     //   {
-    //     channel: 'hamzah123minhal123',
+    //     channel: 'minhal123hamzah123',
+    //   },
+    //   result => {
+    //     console.log(this.state.currentChannel);
+    //     console.log(result);
+    //   },
+    // );
+    // this.pubnub.deleteMessages(
+    //   {
+    //     channel: 'adil123hamzah123',
     //   },
     //   result => {
     //     console.log(this.state.currentChannel);
@@ -279,8 +288,8 @@ export default class ChatScreen extends React.Component {
               animation="slideInLeft"
               style={{
                 width: 35,
-                borderRightWidth: 2,
-                borderRightColor: '#62B491',
+                // borderRightWidth: 2,
+                // borderRightColor: '#62B491',
               }}>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Home')}>

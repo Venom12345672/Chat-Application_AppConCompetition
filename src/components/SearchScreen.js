@@ -48,8 +48,8 @@ export default class SearchScreen extends React.Component {
     if (this.state.serachedUser) {
       return (
         <TouchableOpacity
-          onPress={() =>
-            navigation.navigate('UserProfile', this.state.serachedUser)
+          onPress={() =>{
+            navigation.navigate('UserProfile', this.state.serachedUser)}
           }
           style={{
             marginTop: 10,
@@ -81,9 +81,13 @@ export default class SearchScreen extends React.Component {
           source={require('../assets/wallpaper1.png')}
           style={styles.backgorundImage}>
           <View style={styles.backButtonContainer}>
-          <Animatable.View
+            <Animatable.View
               animation="slideInLeft"
-              style={{width: 35, borderRightWidth: 2, borderRightColor: '#62B491'}}>
+              style={{
+                width: 35,
+                // borderRightWidth: 2,
+                // borderRightColor: '#62B491',
+              }}>
               <TouchableOpacity
                 onPress={() => this.props.navigation.navigate('Home')}>
                 <Image

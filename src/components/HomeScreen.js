@@ -69,7 +69,8 @@ export default class HomeScreen extends React.Component {
     let dbRef = firebase.database().ref('users/' + User.username + '/friends/');
     dbRef.on('child_added', val => {
       let person = val.val();
-      console.log(person, 'CHECK');
+      User.friends.push(person)
+      console.log(User.friends)
       //person.username = val.username
       if (person.username == User.username) {
         //User.name = person.name
@@ -84,7 +85,6 @@ export default class HomeScreen extends React.Component {
   }
 
   renderRow = ({item}) => {
-    console.log(item);
     return (
       <TouchableOpacity
         onPress={() => this.props.navigation.navigate('ChatScreen', item)}
