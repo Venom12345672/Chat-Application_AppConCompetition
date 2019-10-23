@@ -131,6 +131,37 @@ export default class HomeScreen extends React.Component {
         });
       }
     });
+
+    let dbRef2 = firebase
+      .database()
+      .ref('users/' + User.username + '/friends/');
+    dbRef2.orderByChild('profileLink').on('value', snapshot => {
+      if (snapshot.val()) {
+        snapshot.forEach(user => {
+          let item = {
+            name: user.val().name,
+            username: user.val().username,
+            profileLink: user.val().profileLink,
+            active: user.val().active,
+          };
+          if (User.friends[item.username]) {
+            User.activeFriendList.forEach(user => {
+              if (user.username == item.username) {
+                user.profileLink = item.profileLink;
+              }
+            });
+          } else {
+            User.friends[item.username] = item;
+            User.activeFriendList.push(item);
+          }
+          if (item.active == true) {
+            this.setState({
+              users: User.activeFriendList,
+            });
+          }
+        });
+      }
+    });
   }
 
   renderRow = ({item}) => {
