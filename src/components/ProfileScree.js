@@ -50,6 +50,19 @@ export default class ProfileScreen extends React.Component {
         .ref('users')
         .child(User.username)
         .update({name: this.state.name});
+      firebase
+        .database()
+        .ref('users/' + User.username + '/friends')
+        .once('value')
+        .then(snapshot => {
+          snapshot.forEach(x => {
+            firebase
+              .database()
+              .ref('users/' + x.val().username + '/friends/')
+              .child(User.username)
+              .update({name: this.state.name});
+          });
+        });
       Alert.alert('Success!', 'Name changed successfully');
       User.name = this.state.name;
       this.setState({name: this.state.name});
@@ -63,6 +76,7 @@ export default class ProfileScreen extends React.Component {
     await AsyncStorage.clear();
     User.friendsList = [];
     User.friends = {};
+    User.activeFriendList = [];
     this.props.navigation.navigate('Auth');
     this.pubnub.push.removeChannels(
       {
@@ -96,6 +110,19 @@ export default class ProfileScreen extends React.Component {
               .child(User.username)
               .update({
                 profileLink: url,
+              });
+            await firebase
+              .database()
+              .ref('users/' + User.username + '/friends')
+              .once('value')
+              .then(snapshot => {
+                snapshot.forEach(x => {
+                  firebase
+                    .database()
+                    .ref('users/' + x.val().username + '/friends/')
+                    .child(User.username)
+                    .update({profileLink: url});
+                });
               });
             User.photo = url;
             let refresh = this.props.navigation.getParam('refresh');

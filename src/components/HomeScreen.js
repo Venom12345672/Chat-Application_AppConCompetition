@@ -64,85 +64,98 @@ export default class HomeScreen extends React.Component {
     users: [],
     count: 1,
   };
-  isIn = u => {
-    if (User.friendsList.length > 0) {
-      for (let i = 0; i < User.friendsList.length; i++) {
-        if (User.friendsList[i].username == u) {
-          return i;
-        }
-      }
-    }
-    return -1;
-  };
-  async componentDidMount() {
-    const {navigation} = this.props;
 
-    this.focusListener = navigation.addListener('didFocus', async () => {
-      let friend = {};
-      let dbRef = await firebase
-        .database()
-        .ref('users/' + User.username + '/friends/');
-      dbRef.once('child_added', async val => {
-        let person = val.val();
-        friend['username'] = person.username;
-        friend['active'] = person.active;
-        User.friends[person.username] = friend;
-        await firebase
-          .database()
-          .ref('users/' + person.username)
-          .on('value', snapshot => {
-            let value = snapshot.val();
-            User.friends[value.username]['name'] = value.name;
-            User.friends[value.username]['profileLink'] = value.profileLink;
-            let index = this.isIn(value.username);
-            if (index == -1) {
-              User.friendsList.push(User.friends[value.username]);
-            } else {
-              let u = User.friendsList[index].username;
-              User.friendsList[index].active = User.friends[u].active;
-              User.friendsList[index].name = User.friends[u].name;
-              User.friendsList[index].profileLink = User.friends[u].profileLink;
-            }
-            if (friend.username == User.username) {
-              //User.name = person.name
-            } else {
-              this.setState(prevState => {
-                return {
-                  users: User.friendsList,
-                };
-              });
-            }
-            friend = {};
-          });
-      });
+  async componentDidMount() {
+    User.activeFriendList = [];
+    let friend = {};
+    let dbRef = firebase.database().ref('users/' + User.username + '/friends/');
+    dbRef.orderByChild('latestMsg').on('value', snapshot => {
+      if (snapshot.val()) {
+        snapshot.forEach(user => {
+          let item = {
+            name: user.val().name,
+            username: user.val().username,
+            profileLink: user.val().profileLink,
+            latestMsg: user.val().latestMsg,
+            active: user.val().active,
+          };
+
+          if (item.latestMsg.length > 40) {
+            item.latestMsg = item.latestMsg.substring(0, 40) + '...';
+          }
+          if (User.friends[item.username]) {
+            User.activeFriendList.forEach(user => {
+              if (user.username == item.username) {
+                user.latestMsg = item.latestMsg;
+              }
+            });
+          } else {
+            User.friends[item.username] = item;
+            User.activeFriendList.push(item);
+          }
+          if (item.active == true) {
+            this.setState({
+              users: User.activeFriendList,
+            });
+          }
+        });
+      }
     });
 
-    //person.username = val.username
+    let dbRef1 = firebase
+      .database()
+      .ref('users/' + User.username + '/friends/');
+    dbRef1.orderByChild('name').on('value', snapshot => {
+      if (snapshot.val()) {
+        snapshot.forEach(user => {
+          let item = {
+            name: user.val().name,
+            username: user.val().username,
+            active: user.val().active,
+          };
+          if (User.friends[item.username]) {
+            User.activeFriendList.forEach(user => {
+              if (user.username == item.username) {
+                user.name = item.name;
+              }
+            });
+          } else {
+            User.friends[item.username] = item;
+            User.activeFriendList.push(item);
+          }
+          if (item.active == true) {
+            this.setState({
+              users: User.activeFriendList,
+            });
+          }
+        });
+      }
+    });
   }
 
-  componentWillUnmount() {
-    // Remove the event listener before removing the screen from the stack
-    this.focusListener.remove();
-  }
   renderRow = ({item}) => {
-    if (item.active == true) {
-      return (
-        <TouchableOpacity
-          onPress={() => this.props.navigation.navigate('ChatScreen', item)}
-          style={{marginTop: 20, flexDirection: 'row', alignItems: 'center'}}>
-          <Image
-            source={
-              item.profileLink == 'NaN'
-                ? require('../assets/NaN.png')
-                : {uri: item.profileLink}
-            }
-            style={styles.userPhoto}></Image>
-          <Text style={{fontSize: 20, marginLeft: 15}}>{item.name}</Text>
-        </TouchableOpacity>
-      );
-    } else {
-      return null;
-    }
+    return (
+      <TouchableOpacity
+        onPress={() => this.props.navigation.navigate('ChatScreen', item)}
+        style={{marginTop: 20, flexDirection: 'row', alignItems: 'center'}}>
+        <Image
+          source={
+            item.profileLink == 'NaN'
+              ? require('../assets/NaN.png')
+              : {uri: item.profileLink}
+          }
+          style={styles.userPhoto}></Image>
+        <View>
+          <Text style={{fontSize: 20, marginLeft: 15, color: '#679AC6'}}>
+            {item.name}
+          </Text>
+          <Text
+            style={{fontSize: 14, marginLeft: 15, color: 'rgba(0,0,0,0.7)'}}>
+            {item.latestMsg}
+          </Text>
+        </View>
+      </TouchableOpacity>
+    );
   };
   renderName = () => {
     for (let i = 0; i < User.name.length; i++) {
@@ -204,13 +217,16 @@ export default class HomeScreen extends React.Component {
             </Animatable.View>
           </TouchableOpacity>
           <View style={{width: '90%', alignSelf: 'center', marginTop: 30}}>
-            <Text style={{color: '#9A9A9A', fontSize: 14}}>Active Conversations</Text>
+            <Text style={{color: '#9A9A9A', fontSize: 14}}>
+              Active Conversations
+            </Text>
           </View>
           <FlatList
             style={{marginTop: 20}}
             data={this.state.users}
             renderItem={this.renderRow}
             keyExtractor={item => item.username}
+            extraData={this.state.users}
           />
           <FloatingAction
             color="#679AC6"

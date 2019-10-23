@@ -20,28 +20,38 @@ export default class UserProfile extends React.Component {
       alreadyFriend: false,
     };
   }
-  addFriend = () => {
+  addFriend = async () => {
     var myfriendListRef = firebase
       .database()
-      .ref('users/' + User.username + '/friends');
-    var newfriendRef = myfriendListRef.push();
-    newfriendRef.set({
+      .ref(
+        'users/' +
+          User.username +
+          '/friends/' +
+          this.state.seacrhedUser.username,
+      );
+    myfriendListRef.set({
       username: this.state.seacrhedUser.username,
       name: this.state.seacrhedUser.name,
       channelKey: User.username + this.state.seacrhedUser.username,
       profileLink: this.state.seacrhedUser.profileLink,
       active: false,
+      latestMsg: ''
     });
     var otherFriendListRef = firebase
       .database()
-      .ref('users/' + this.state.seacrhedUser.username + '/friends');
-    var otherNewFriend = otherFriendListRef.push();
-    otherNewFriend.set({
+      .ref(
+        'users/' +
+          this.state.seacrhedUser.username +
+          '/friends/' +
+          User.username,
+      );
+    otherFriendListRef.set({
       username: User.username,
       name: User.name,
       channelKey: User.username + this.state.seacrhedUser.username,
       profileLink: User.photo,
       active: false,
+      latestMsg: ''
     });
     let item = {
       name: this.state.seacrhedUser.name,

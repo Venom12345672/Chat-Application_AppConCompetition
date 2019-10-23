@@ -150,27 +150,25 @@ export default class ChatScreen extends React.Component {
   }
 
   onSend(messages = []) {
-    if (this.state.active == false) {
+    console.log(messages[0].text)
       firebase
         .database()
         .ref('users/' + User.username + '/friends/')
         .child(this.state.id1)
-        .update({active: true});
+        .update({active: true,latestMsg: messages[0].text});
       
       firebase
         .database()
         .ref('users/' + this.state.person.username + '/friends/')
         .child(this.state.id2)
-        .update({active: true});
+        .update({active: true,latestMsg: messages[0].text});
 
-      
-    }
+    
 
     this.pubnub.publish({
       message: messages,
       channel: this.state.currentChannel,
     });
-    console.log(messages);
     this.pubnub.publish(
       {
         message: {

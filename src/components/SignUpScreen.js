@@ -81,10 +81,17 @@ export default class SignUpScreen extends React.Component {
       Alert.alert('Sign Up Failed', 'No field should be left empty.');
       return;
     }
+    if (this.state.username.length > 15) {
+      Alert.alert(
+        'Sign Up Failed',
+        'Username length cannot exceed 15 characters.',
+      );
+      return;
+    }
     if (this.state.username.length < 5) {
       Alert.alert(
         'Sign Up Failed',
-        'Username lenght should be greater than 8 characters.',
+        'Username lenght should be greater than 5 characters.',
       );
       return;
     }
@@ -92,11 +99,8 @@ export default class SignUpScreen extends React.Component {
       Alert.alert('Sign Up Failed', `Username cannot have . \\ / : * ,`);
       return;
     }
-    if (this.state.password.length < 8) {
-      Alert.alert(
-        'Sign Up Failed',
-        'Password lenght should be greater than 8 characters.',
-      );
+    if (this.state.password.length <= 8) {
+      Alert.alert('Sign Up Failed', 'Password lenght atleast 8 characters.');
       return;
     }
     if (this.state.password != this.state.confirmPassword) {
@@ -200,7 +204,11 @@ export default class SignUpScreen extends React.Component {
               <Image
                 source={{uri: this.state.photo.uri}}
                 style={{width: 150, height: 150, borderRadius: 100}}></Image>
-            ) : null}
+            ) : (
+              <Image
+                source={require('../assets/camera.png')}
+                style={{width: 40, height: 40, borderRadius: 100,alignSelf:'center'}}></Image>
+            )}
           </TouchableOpacity>
           <KeyboardAwareScrollView>
             <TextInput
@@ -308,5 +316,6 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     backgroundColor: '#e4e4e4',
     marginTop: 40,
+    justifyContent: 'center' 
   },
 });

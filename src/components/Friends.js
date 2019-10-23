@@ -45,6 +45,8 @@ export default class Friends extends React.Component {
           friend = {};
         });
     });
+
+    
   }
   renderRow = ({item}) => {
     return (
@@ -58,7 +60,14 @@ export default class Friends extends React.Component {
               : {uri: item.profileLink}
           }
           style={styles.userPhoto}></Image>
-        <Text style={{fontSize: 20, marginLeft: 15}}>{item.name}</Text>
+        <View>
+          <Text style={{fontSize: 20, marginLeft: 15, color: '#679AC6'}}>
+            {item.name}
+          </Text>
+          <Text style={{fontSize: 14, marginLeft: 15, color: 'rgba(0,0,0,0.7)'}}>
+            {item.username}
+          </Text>
+        </View>
       </TouchableOpacity>
     );
   };
