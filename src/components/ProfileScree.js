@@ -5,7 +5,6 @@ import {
   TextInput,
   TouchableOpacity,
   Alert,
-  AsyncStorage,
   StyleSheet,
   ImageBackground,
   Image,
@@ -16,6 +15,7 @@ import firebase from 'firebase';
 import PubNubReact from 'pubnub-react';
 import * as Animatable from 'react-native-animatable';
 import ImagePicker from 'react-native-image-picker';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class ProfileScreen extends React.Component {
   constructor(props) {
@@ -73,12 +73,7 @@ export default class ProfileScreen extends React.Component {
   };
 
   logoutHandler = async () => {
-    await AsyncStorage.clear();
-    User.friendsList = [];
-    User.friends = {};
-    User.activeFriendList = [];
-    this.props.navigation.navigate('Auth');
-    this.pubnub.push.removeChannels(
+    await this.pubnub.push.removeChannels(
       {
         channels: [User.username],
         device: User.token,
@@ -92,6 +87,17 @@ export default class ProfileScreen extends React.Component {
         }
       },
     );
+    await AsyncStorage.clear();
+    User.username = null;
+    User.name = null;
+    User.friends = {};
+    User.friendsList = [];
+    User.token = null;
+    User.password = null;
+    User.photo = null;
+    User.activeFriendList = [];
+      console.log(User)
+    this.props.navigation.navigate('Auth');
   };
   handleChoosePhoto = () => {
     const options = {noData: true};

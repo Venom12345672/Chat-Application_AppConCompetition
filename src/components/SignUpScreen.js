@@ -6,7 +6,6 @@ import {
   SafeAreaView,
   TextInput,
   Alert,
-  AsyncStorage,
   Image,
   StyleSheet,
   ImageBackground,
@@ -17,6 +16,7 @@ import User from '../User';
 import ImagePicker from 'react-native-image-picker';
 import {KeyboardAwareScrollView} from 'react-native-keyboard-aware-scroll-view';
 import * as Animatable from 'react-native-animatable';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class SignUpScreen extends React.Component {
   state = {
@@ -88,6 +88,13 @@ export default class SignUpScreen extends React.Component {
       );
       return;
     }
+    if (this.state.username.length > 19) {
+      Alert.alert(
+        'Sign Up Failed',
+        'Name is too long...',
+      );
+      return;
+    }
     if (this.state.username.length < 5) {
       Alert.alert(
         'Sign Up Failed',
@@ -99,7 +106,7 @@ export default class SignUpScreen extends React.Component {
       Alert.alert('Sign Up Failed', `Username cannot have . \\ / : * ,`);
       return;
     }
-    if (this.state.password.length <= 8) {
+    if (this.state.password.length < 8) {
       Alert.alert('Sign Up Failed', 'Password lenght atleast 8 characters.');
       return;
     }

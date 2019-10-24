@@ -66,8 +66,10 @@ export default class HomeScreen extends React.Component {
   };
 
   async componentDidMount() {
+    console.log(this.state.users,"HAMZAHH")
+    User.friends = {};
     User.activeFriendList = [];
-    let friend = {};
+    this.setState({users: []});
     let dbRef = firebase.database().ref('users/' + User.username + '/friends/');
     dbRef.orderByChild('latestMsg').on('value', snapshot => {
       if (snapshot.val()) {
@@ -79,7 +81,6 @@ export default class HomeScreen extends React.Component {
             latestMsg: user.val().latestMsg,
             active: user.val().active,
           };
-
           if (item.latestMsg.length > 40) {
             item.latestMsg = item.latestMsg.substring(0, 40) + '...';
           }
@@ -89,11 +90,11 @@ export default class HomeScreen extends React.Component {
                 user.latestMsg = item.latestMsg;
               }
             });
-          } else {
+          } else if(User.username != item.username) {
             User.friends[item.username] = item;
             User.activeFriendList.push(item);
           }
-          if (item.active == true) {
+          if (item.active == true && User.username != item.username) {
             this.setState({
               users: User.activeFriendList,
             });
@@ -119,11 +120,11 @@ export default class HomeScreen extends React.Component {
                 user.name = item.name;
               }
             });
-          } else {
+          } else if(User.username != item.username) {
             User.friends[item.username] = item;
             User.activeFriendList.push(item);
           }
-          if (item.active == true) {
+          if (item.active == true && User.username != item.username) {
             this.setState({
               users: User.activeFriendList,
             });
@@ -150,11 +151,42 @@ export default class HomeScreen extends React.Component {
                 user.profileLink = item.profileLink;
               }
             });
-          } else {
+          } else if(User.username != item.username) {
             User.friends[item.username] = item;
             User.activeFriendList.push(item);
           }
-          if (item.active == true) {
+          if (item.active == true && User.username != item.username) {
+            this.setState({
+              users: User.activeFriendList,
+            });
+          }
+        });
+      }
+    });
+
+    let dbRef3 = firebase
+      .database()
+      .ref('users/' + User.username + '/friends/');
+    dbRef3.orderByChild('readStatus').on('value', snapshot => {
+      if (snapshot.val()) {
+        snapshot.forEach(user => {
+          let item = {
+            name: user.val().name,
+            username: user.val().username,
+            active: user.val().active,
+            readStatus: user.val().readStatus,
+          };
+          if (User.friends[item.username]) {
+            User.activeFriendList.forEach(user => {
+              if (user.username == item.username) {
+                user.readStatus = item.readStatus;
+              }
+            });
+          } else if(User.username != item.username) {
+            User.friends[item.username] = item;
+            User.activeFriendList.push(item);
+          }
+          if (item.active == true && User.username != item.username) {
             this.setState({
               users: User.activeFriendList,
             });
@@ -177,14 +209,37 @@ export default class HomeScreen extends React.Component {
           }
           style={styles.userPhoto}></Image>
         <View>
-          <Text style={{fontSize: 20, marginLeft: 15, color: '#679AC6'}}>
+          <Text
+            style={{
+              fontSize: 20,
+              marginLeft: 15,
+              color: '#679AC6',
+              fontWeight: item.readStatus ? 'bold' : null,
+            }}>
             {item.name}
           </Text>
           <Text
-            style={{fontSize: 14, marginLeft: 15, color: 'rgba(0,0,0,0.7)'}}>
+            style={{
+              fontSize: 14,
+              marginLeft: 15,
+              color: 'rgba(0,0,0,0.7)',
+              fontWeight: item.readStatus ? 'bold' : null,
+            }}>
             {item.latestMsg}
           </Text>
         </View>
+        {item.readStatus ? (
+          <View
+            style={{
+              height: 20,
+              width: 20,
+              borderRadius: 100,
+              backgroundColor: '#679AC6',
+              position: 'absolute',
+              right: 0,
+              marginRight: 20,
+            }}></View>
+        ) : null}
       </TouchableOpacity>
     );
   };
@@ -194,13 +249,10 @@ export default class HomeScreen extends React.Component {
         return User.name.substring(0, i);
       }
     }
-    return User.name.substring(0, 10);
+    return User.name.substring(0, 7);
   };
   render() {
     return (
-      // <SafeAreaView>
-
-      // </SafeAreaView>
       <View style={styles.container}>
         <StatusBar backgroundColor="#679AC6" barStyle="light-content" />
 
@@ -211,7 +263,6 @@ export default class HomeScreen extends React.Component {
             onPress={() =>
               this.props.navigation.navigate('ProfileScreen', {
                 refresh: () => {
-                  console.log(User);
                   this.setState({});
                 },
               })
@@ -264,7 +315,6 @@ export default class HomeScreen extends React.Component {
             actions={actions}
             onPressItem={name => {
               if (name == 'search') {
-                console.log(name);
                 this.props.navigation.navigate('SearchScreen');
               } else if (name == 'friends') {
                 this.props.navigation.navigate('FriendsScreen');

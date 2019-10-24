@@ -4,15 +4,16 @@ import {
   TextInput,
   View,
   TouchableOpacity,
-  AsyncStorage,
   Alert,
   ImageBackground,
   StatusBar,
   StyleSheet,
+  ToastAndroid,
 } from 'react-native';
 import User from '../User';
 import firebase from 'firebase';
 import * as Animatable from 'react-native-animatable';
+import AsyncStorage from '@react-native-community/async-storage';
 
 export default class LoginScreen extends React.Component {
   static navigationOptions = {
@@ -38,17 +39,18 @@ export default class LoginScreen extends React.Component {
       Alert.alert('Invalid Login', 'Please fill all the input fields');
       return;
     }
+    ToastAndroid.show('Siging in. Please wait...', ToastAndroid.SHORT);
     var ref = firebase.database().ref(`/users`);
     await ref
       .orderByChild('username')
       .equalTo(this.state.username)
       .once('value')
-      .then(snapshot => {
+      .then(async snapshot => {
         if (snapshot.val()) {
           fetchedData = snapshot.child(this.state.username).val();
           if (fetchedData.password == this.state.password) {
-            AsyncStorage.setItem('username', fetchedData.username);
-            AsyncStorage.setItem('name', fetchedData.name);
+            await AsyncStorage.setItem('username', fetchedData.username);
+            await AsyncStorage.setItem('name', fetchedData.name);
             User.username = fetchedData.username;
             User.name = fetchedData.name;
             User.password = fetchedData.password;
@@ -64,6 +66,9 @@ export default class LoginScreen extends React.Component {
           return;
         }
       });
+    // .catch(() => {
+    //   Alert.alert('Failed', 'Login Failed');
+    // });
   };
   render() {
     return (

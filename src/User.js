@@ -1,4 +1,4 @@
-const User = {
+let User = {
     username: null,
     name: null,
     friends: {},

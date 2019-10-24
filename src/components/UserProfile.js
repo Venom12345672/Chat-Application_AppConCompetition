@@ -35,7 +35,8 @@ export default class UserProfile extends React.Component {
       channelKey: User.username + this.state.seacrhedUser.username,
       profileLink: this.state.seacrhedUser.profileLink,
       active: false,
-      latestMsg: ''
+      latestMsg: '',
+      readStatus: ''
     });
     var otherFriendListRef = firebase
       .database()
@@ -51,7 +52,8 @@ export default class UserProfile extends React.Component {
       channelKey: User.username + this.state.seacrhedUser.username,
       profileLink: User.photo,
       active: false,
-      latestMsg: ''
+      latestMsg: '',
+      readStatus: ''
     });
     let item = {
       name: this.state.seacrhedUser.name,

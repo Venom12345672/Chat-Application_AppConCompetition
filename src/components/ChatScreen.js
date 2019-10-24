@@ -47,7 +47,15 @@ export default class ChatScreen extends React.Component {
   }
 
   async componentDidMount() {
-    ToastAndroid.show('Loading Previous Messages if any...', ToastAndroid.SHORT);
+    ToastAndroid.show(
+      'Loading Previous Messages if any...',
+      ToastAndroid.SHORT,
+    );
+    await firebase
+      .database()
+      .ref('users/' + User.username + '/friends')
+      .child(this.state.person.username)
+      .update({readStatus: false});
     await firebase
       .database()
       .ref(`/users/${User.username}/friends`)
@@ -150,20 +158,17 @@ export default class ChatScreen extends React.Component {
   }
 
   onSend(messages = []) {
-    console.log(messages[0].text)
-      firebase
-        .database()
-        .ref('users/' + User.username + '/friends/')
-        .child(this.state.id1)
-        .update({active: true,latestMsg: messages[0].text});
-      
-      firebase
-        .database()
-        .ref('users/' + this.state.person.username + '/friends/')
-        .child(this.state.id2)
-        .update({active: true,latestMsg: messages[0].text});
+    firebase
+      .database()
+      .ref('users/' + User.username + '/friends/')
+      .child(this.state.id1)
+      .update({active: true, latestMsg: messages[0].text});
 
-    
+    firebase
+      .database()
+      .ref('users/' + this.state.person.username + '/friends/')
+      .child(this.state.id2)
+      .update({active: true, latestMsg: messages[0].text, readStatus: true});
 
     this.pubnub.publish({
       message: messages,
