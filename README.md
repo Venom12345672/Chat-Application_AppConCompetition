@@ -2,11 +2,11 @@
 
 Hello from MArio Brothers:
 
-Team Members: 
+#Team Members: 
 Hamzah Baig
 Minnhal Aftab
 
-#Insitute: Lahore Univeristy of Management Sciences#
+#Insitute: Lahore Univeristy of Management Sciences
 
 App Name: CONNECT
 Technology used: React Native (Android Build)
@@ -17,11 +17,11 @@ They can connect with them and can sed text messages, documents and Images.
 
 *All messasges will be in order*
 
-NOTE: App works with internet connection only.
+#NOTE: App works with internet connection only.
 
-RUN PROJECT ON YOUR OWN MACHINE: 
+#RUN PROJECT ON YOUR OWN MACHINE: 
 
-If you want to run this project follow these following steps: 
+#If you want to run this project follow these following steps: 
 
 1) Download and Install node.js and react-native.
 2) Setup react-native and node.js using react-native documentation.
