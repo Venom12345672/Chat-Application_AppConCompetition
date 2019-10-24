@@ -6,7 +6,7 @@ Team Members:
 Hamzah Baig
 Minnhal Aftab
 
-Insitute: Lahore Univeristy of Management Sciences
+#Insitute: Lahore Univeristy of Management Sciences#
 
 App Name: CONNECT
 Technology used: React Native (Android Build)
