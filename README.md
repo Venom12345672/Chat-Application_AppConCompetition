@@ -29,13 +29,12 @@ It is beautifully designed and all the functionality is fully established. UX an
 
 ## NOTE: App works with internet connection only.
 
-# RUN PROJECT ON YOUR OWN MACHINE: 
+# RUN PROJECT ON YOUR OWN LOCAL MACHINE: 
 
 
 ## If you want to run this project follow these following steps: 
 
-### Required IDE: 
-  vscode
+### Required IDE: vscode
   
 1) Download and Install node.js and react-native.
 2) Setup react-native and node.js using react-native documentation.Follow the link for it
