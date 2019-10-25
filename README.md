@@ -37,7 +37,9 @@ It is beautifully designed and all the functionality is fully established. UX an
 2) Setup react-native and node.js using react-native documentation.Follow the link for it
     https://facebook.github.io/react-native/docs/getting-started
 3) Clone the project in your local machine.
-4) Open terminal in the folder and run this command "npm install"
-5) Once all the dependencies are installed. Run command "react-native run-android"
+4) Open terminal in the folder and run this command:
+      ## npm install
+5) Once all the dependencies are installed. Run command 
+      ## react-native run-android
 
 HAPPY CHATTING :D
