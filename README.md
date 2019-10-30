@@ -15,8 +15,8 @@ Hello from Mario Brothers:
 
 # Description: 
   It allows people to chat with each other using unique usernames. User can sign up by keeping a unique username and can 
-set his own profile picture. Once his or her account is setup user can search for his or her friend using their unique usernames. 
-They can connect with them and can sed text messages, documents and Images.
+set his own profile picture. Once his or her account is setup user can search for his or her friend using his or her unique usernames. 
+They can connect with them and can send text messages, documents and Images.
 
 It is beautifully designed and all the functionality is fully established. UX and UI is develioped keeping UX and UI rules in mind. Install the app and enjoy chatting with your friends with soothing colours and User Interface.
 
