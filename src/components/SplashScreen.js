@@ -6,6 +6,7 @@ import {
   Dimensions,
   ImageBackground,
   Image,
+  StatusBar,
 } from 'react-native';
 import * as Animatable from 'react-native-animatable';
 
@@ -31,6 +32,8 @@ export default class SplashScreen extends React.Component {
   render() {
     return (
       <View style={styles.container}>
+        <StatusBar backgroundColor="#679AC6" barStyle="light-content" />
+
         <ImageBackground
           style={styles.backgorundImage}
           source={require('../assets/wallpaper1.png')}>
