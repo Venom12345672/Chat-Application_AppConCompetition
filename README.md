@@ -50,9 +50,9 @@ It is beautifully designed and all the functionality is fully established. UX an
 ### Demo Video Link:
   https://drive.google.com/open?id=1lC35DFkAsUtV8fpHcFD9TgByPp8Jpa_r
 ### Apk Link: 
-
+  https://drive.google.com/open?id=10hP3EpZMLZnht9wMAZoFEroAR2SOQ4Eg
 ### Presentation slides:
-https://drive.google.com/open?id=1Tp5uXO0N2zk6rHacfxDwlnCMEfLeTTO8
+  https://drive.google.com/open?id=1Tp5uXO0N2zk6rHacfxDwlnCMEfLeTTO8
 ### Design Document:
 
 
