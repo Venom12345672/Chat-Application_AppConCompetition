@@ -27,7 +27,7 @@ It is beautifully designed and all the functionality is fully established. UX an
 3) PubNub Push Notification.
 
 *All messasges will be in order*
-
+*Messages will be deleted after 1-1.5 days (Free API Plan of Chat Server)* 
 ## NOTE: App works with internet connection only.
 
 # RUN PROJECT ON YOUR OWN LOCAL MACHINE: 
