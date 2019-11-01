@@ -54,6 +54,6 @@ It is beautifully designed and all the functionality is fully established. UX an
 ### Presentation slides:
   https://drive.google.com/open?id=1Tp5uXO0N2zk6rHacfxDwlnCMEfLeTTO8
 ### Design Document (UML Diagrams are in document):
-  https://drive.google.com/open?id=1Es9yu7469Sd9YFeByaDAw8t5_Ue6HNNz
-
+  https://drive.google.com/open?id=1X3wQaJMDGYiTlQNa7IKSEsX0vDdqZ1N5
+  
 HAPPY CHATTING :D
