@@ -48,9 +48,9 @@ It is beautifully designed and all the functionality is fully established. UX an
 
 ## -: Important Links :-
 ### Demo Video Link:
-  https://drive.google.com/open?id=1lC35DFkAsUtV8fpHcFD9TgByPp8Jpa_r
-### Apk Link: 
-  https://drive.google.com/open?id=10hP3EpZMLZnht9wMAZoFEroAR2SOQ4Eg
+  https://www.youtube.com/watch?v=DoihyEyTdyk&feature=youtu.be
+### Play Store Link: 
+  https://play.google.com/store/apps/details?id=com.firebasechat
 ### Presentation slides:
   https://drive.google.com/open?id=1Tp5uXO0N2zk6rHacfxDwlnCMEfLeTTO8
 ### Design Document (UML Diagrams are in document):
